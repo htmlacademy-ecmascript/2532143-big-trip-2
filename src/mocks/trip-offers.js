@@ -3,12 +3,12 @@ export const mockOffers = [
     type: 'taxi',
     offers: [
       {
-        id: 1,
+        id: 'taxi-1',
         title: 'Upgrade to a business class',
         price: 120
       },
       {
-        id: 2,
+        id: 'taxi-2',
         title: 'Open the window',
         price: 300
       }
@@ -18,12 +18,12 @@ export const mockOffers = [
     type: 'flight',
     offers: [
       {
-        id: 3,
+        id: 'flight-3',
         title: 'Choose a seat',
         price: 20
       },
       {
-        id: 4,
+        id: 'flight-4',
         title: 'Take a pilot`s seat',
         price: 1200
       }

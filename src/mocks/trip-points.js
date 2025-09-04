@@ -8,7 +8,7 @@ export const mockPoints = [
     dateTo: '2019-07-11T11:22:13.375Z',
     destination: 1,
     isFavorite: false,
-    offers: [1, 2],
+    offers: ['taxi-1', 'taxi-2'],
     type: 'taxi'
   },
   {
@@ -28,7 +28,7 @@ export const mockPoints = [
     dateTo: '2019-07-11T11:22:13.375Z',
     destination: 3,
     isFavorite: true,
-    offers: [4],
+    offers: ['flight-4'],
     type: 'flight'
   }
 ];

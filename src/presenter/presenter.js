@@ -16,15 +16,16 @@ export default class Presenter {
 
   init() {
     this.points = [...this.pointsModel.getPoints()];
+    this.offers = this.pointsModel.getOffers();
+    this.destinations = this.pointsModel.getDestinations();
 
     render(new InfoView(), this.controlsContainer, 'afterbegin');
     render(new SortView(), this.mainContainer);
     render(this.eventListComponent, this.mainContainer);
     render(new EditorView() ,this.eventListComponent.getElement());
 
-    for (let i = 0; this.points.length; i++) {
-      render(new PointView({point: this.points[i]}), this.eventListComponent.getElement());
-    }
+    this.points.forEach((point) => {
+      render(new PointView({point, destinations: this.destinations, offers: this.offers}), this.eventListComponent.getElement());
+    });
   }
-
 }
