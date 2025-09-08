@@ -11,12 +11,22 @@ export const mockOffers = [
         id: 'taxi-2',
         title: 'Open the window',
         price: 300
-      }
+      },
+      {
+        id: 'taxi-3',
+        title: 'Talk with the driver',
+        price: 0
+      },
     ]
   },
   {
     type: 'flight',
     offers: [
+      {
+        id: 'flight-2',
+        title: 'Open the window',
+        price: 20
+      },
       {
         id: 'flight-3',
         title: 'Choose a seat',

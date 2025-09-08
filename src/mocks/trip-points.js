@@ -1,5 +1,3 @@
-import { getRandomArrayElement } from '../utils.js';
-
 export const mockPoints = [
   {
     id : 1,
@@ -13,7 +11,7 @@ export const mockPoints = [
   },
   {
     id : 2,
-    basePrice: 110,
+    basePrice: 230,
     dateFrom: '2019-07-10T22:55:56.845Z',
     dateTo: '2019-07-11T11:22:13.375Z',
     destination: 2,
@@ -23,7 +21,7 @@ export const mockPoints = [
   },
   {
     id : 3,
-    basePrice: 200,
+    basePrice: 760,
     dateFrom: '2019-07-10T22:55:56.845Z',
     dateTo: '2019-07-11T11:22:13.375Z',
     destination: 3,
@@ -32,7 +30,3 @@ export const mockPoints = [
     type: 'flight'
   }
 ];
-
-export function getRandomPoint() {
-  return getRandomArrayElement(mockPoints);
-}

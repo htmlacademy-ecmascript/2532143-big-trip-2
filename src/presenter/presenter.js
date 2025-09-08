@@ -22,7 +22,11 @@ export default class Presenter {
     render(new InfoView(), this.controlsContainer, 'afterbegin');
     render(new SortView(), this.mainContainer);
     render(this.eventListComponent, this.mainContainer);
-    render(new EditorView() ,this.eventListComponent.getElement());
+    render(new EditorView({
+      point: this.points[0],
+      destinations: this.destinations,
+      offers: this.offers
+    }) ,this.eventListComponent.getElement());
 
     this.points.forEach((point) => {
       render(new PointView({point, destinations: this.destinations, offers: this.offers}), this.eventListComponent.getElement());
