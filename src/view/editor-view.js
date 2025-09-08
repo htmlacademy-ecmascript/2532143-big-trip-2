@@ -2,11 +2,13 @@ import { POINT_TYPES } from '../consts.js';
 import { createElement } from '../render.js';
 import { humanizeDate } from '../utils.js';
 
-function createTypeTemplate(type) {
+function createTypeTemplate(type, currentType) {
+  const isChecked = type.toLowerCase() === currentType ? 'checked' : '';
+
   return (
     `<div class="event__type-item">
-        <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}">
-        <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type}
+        <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${isChecked}>
+        <label class="event__type-label  event__type-label--${type.toLowerCase()}" for="event-type-${type.to}-1">${type}
         </label>
       </div>`
   );
@@ -15,6 +17,7 @@ function createTypeTemplate(type) {
 function createOfferTemplate(offerItem, checkedOffers) {
   const {title, price, id} = offerItem;
   const isChecked = checkedOffers.map((item) => item.id).includes(id) ? 'checked' : '';
+
   return (
     `<div class="event__offer-selector">
       <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${isChecked}>
@@ -27,34 +30,44 @@ function createOfferTemplate(offerItem, checkedOffers) {
   );
 }
 
+function createOptionTemplate(value) {
+
+  return (
+    `<option value=${value.name}></option>`
+  );
+}
+
 function renderOffers(offersList, checkedOffers) {
-  if (offersList.length !== 0) {
-    return (
-      `<section class="event__section  event__section--offers">
+  if (offersList.length === 0) {
+
+    return '';
+  }
+
+  return (
+    `<section class="event__section  event__section--offers">
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
         <div class="event__available-offers">
         ${offersList.map((offerItem) => createOfferTemplate(offerItem, checkedOffers)).join('')}
         </div>
       </section>`
-    );
-  }
-  return '';
+  );
 }
 
 function createDestinationTemplate(destinations, point) {
   const destination = destinations[point.id - 1];
   const {description, pictures} = destination;
   if (description > 0 || pictures.length > 0) {
+
     return (
       `<section class="event__section  event__section--destination">
-          <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${description}</p>
-        </section>
-        <div class="event__photos-container">
-          <div class="event__photos-tape">
-            <img class="event__photo" src="${pictures[0].src}" alt="${pictures[0].description}">
-          </div>
-        </div>`
+      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+      <p class="event__destination-description">${description}</p>
+    <div class="event__photos-container">
+      <div class="event__photos-tape">
+        <img class="event__photo" src="${pictures[0].src}" alt="${pictures[0].description}">
+      </div>
+    </div>
+</section>`
     );
   }
 }
@@ -64,6 +77,7 @@ function createEditorTemplate(point, destinations, offers) {
   const name = destinations.find((destinationPoint) => destinationPoint.id === destination).name;
   const offersByType = offers.find((offer) => offer.type === point.type).offers;
   const choosenOffers = offersByType.filter((item) => point.offers.find((id) => item.id === id));
+
   return (
     `<form class="event event--edit" action="#" method="post">
                 <header class="event__header">
@@ -77,7 +91,8 @@ function createEditorTemplate(point, destinations, offers) {
                     <div class="event__type-list">
                       <fieldset class="event__type-group">
                         <legend class="visually-hidden">Event type</legend>
-                        ${POINT_TYPES.map((item) => createTypeTemplate(item)).join('')}
+                        ${POINT_TYPES.map((item) => createTypeTemplate(item, point.type)).join('')}
+
                       </fieldset>
                     </div>
                   </div>
@@ -88,9 +103,7 @@ function createEditorTemplate(point, destinations, offers) {
                     </label>
                     <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${name}" list="destination-list-1">
                     <datalist id="destination-list-1">
-                      <option value="Amsterdam"></option>
-                      <option value="Geneva"></option>
-                      <option value="Chamonix"></option>
+                      ${destinations.map((item) => createOptionTemplate(item)).join('')}
                     </datalist>
                   </div>
 
@@ -118,8 +131,8 @@ function createEditorTemplate(point, destinations, offers) {
                 </header>
                 <section class="event__details">
                    ${renderOffers(offersByType, choosenOffers)}
-                </section>
                   ${createDestinationTemplate(destinations, point)}
+                </section>
                 </section>
               </form>`
   );
