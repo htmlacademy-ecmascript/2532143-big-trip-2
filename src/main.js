@@ -1,7 +1,7 @@
 import Presenter from './presenter/presenter.js';
 import FilterView from './view/filter-view.js';
 import PointsModel from './model/point-model.js';
-import { render } from './render.js';
+import { render } from './framework/render.js';
 
 const headerContainer = document.querySelector('.trip-controls');
 const mainContainer = document.querySelector('.trip-events');
