@@ -9,15 +9,14 @@ import { render, replace } from '../framework/render.js';
 export default class Presenter {
   #mainContainer;
   #pointsModel;
+  #headerContainer = document.querySelector('.trip-controls');
+  #controlsContainer = document.querySelector('.trip-main');
+  #eventListComponent = new EventList();
 
   constructor({container, pointsModel}) {
     this.#mainContainer = container;
     this.#pointsModel = pointsModel;
   }
-
-  #headerContainer = document.querySelector('.trip-controls');
-  #controlsContainer = document.querySelector('.trip-main');
-  #eventListComponent = new EventList();
 
   init() {
     this.points = [...this.#pointsModel.points];
