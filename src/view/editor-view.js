@@ -131,8 +131,7 @@ function createEditorTemplate(point, destinations, offers) {
                 </header>
                 <section class="event__details">
                    ${renderOffers(offersByType, choosenOffers)}
-                  ${createDestinationTemplate(destinations, point)}
-                </section>
+                   ${createDestinationTemplate(destinations, point)}
                 </section>
               </form>`
   );
@@ -142,15 +141,32 @@ export default class EditorView extends AbstractView{
   #point = null;
   #destinations = null;
   #offers = null;
+  #handleEditClick = null;
+  #handleFormSubmit = null;
 
-  constructor({point, destinations, offers}) {
+  constructor({point, destinations, offers, onEditClick, onFormSubmit}) {
     super();
     this.#point = point;
     this.#destinations = destinations;
     this.#offers = offers;
+    this.#handleEditClick = onEditClick;
+    this.#handleFormSubmit = onFormSubmit;
+
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
+    this.element.querySelector('form')?.addEventListener('submit', this.#formSubmitHandler);
   }
 
   get template() {
     return createEditorTemplate(this.#point, this.#destinations, this.#offers);
   }
+
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit();
+  };
 }
