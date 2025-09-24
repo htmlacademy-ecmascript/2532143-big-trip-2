@@ -1,5 +1,5 @@
 import { POINT_TYPES } from '../consts.js';
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeDate } from '../utils.js';
 
 function createTypeTemplate(type, currentType) {
@@ -131,32 +131,42 @@ function createEditorTemplate(point, destinations, offers) {
                 </header>
                 <section class="event__details">
                    ${renderOffers(offersByType, choosenOffers)}
-                  ${createDestinationTemplate(destinations, point)}
-                </section>
+                   ${createDestinationTemplate(destinations, point)}
                 </section>
               </form>`
   );
 }
 
-export default class EditorView {
-  constructor({point, destinations, offers}) {
-    this.point = point;
-    this.destinations = destinations;
-    this.offers = offers;
+export default class EditorView extends AbstractView{
+  #point = null;
+  #destinations = null;
+  #offers = null;
+  #handleEditClick = null;
+  #handleFormSubmit = null;
+
+  constructor({point, destinations, offers, onEditClick, onFormSubmit}) {
+    super();
+    this.#point = point;
+    this.#destinations = destinations;
+    this.#offers = offers;
+    this.#handleEditClick = onEditClick;
+    this.#handleFormSubmit = onFormSubmit;
+
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
+    this.element.querySelector('form')?.addEventListener('submit', this.#formSubmitHandler);
   }
 
-  getTemplate() {
-    return createEditorTemplate(this.point, this.destinations, this.offers);
+  get template() {
+    return createEditorTemplate(this.#point, this.#destinations, this.#offers);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-    return this.element;
-  }
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
 
-  removeElement() {
-    this.element = null;
-  }
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit();
+  };
 }
