@@ -9,13 +9,15 @@ import { render, replace } from '../framework/render.js';
 export default class Presenter {
   #mainContainer;
   #pointsModel;
-  #headerContainer = document.querySelector('.trip-controls');
-  #controlsContainer = document.querySelector('.trip-main');
+  #headerContainer;
+  #controlsContainer;
   #eventListComponent = new EventList();
 
-  constructor({container, pointsModel}) {
+  constructor({container, pointsModel, headerContainer, controlsContainer}) {
     this.#mainContainer = container;
     this.#pointsModel = pointsModel;
+    this.#headerContainer = headerContainer;
+    this.#controlsContainer = controlsContainer;
   }
 
   init() {
@@ -46,7 +48,6 @@ export default class Presenter {
         },
         onFormSubmit: () => {
           replaceFormToPoint();
-          document.removeEventListener('keydown', escKeyDownHandler);
         },
       });
 
@@ -56,16 +57,17 @@ export default class Presenter {
         offers: this.offers,
         onEditClick: () => {
           replacePointToForm();
-          document.addEventListener('keydown', escKeyDownHandler);
         },
       });
 
       function replacePointToForm() {
         replace(editorView, newPoint);
+        document.addEventListener('keydown', escKeyDownHandler);
       }
 
       function replaceFormToPoint() {
         replace(newPoint, editorView);
+        document.removeEventListener('keydown', escKeyDownHandler);
       }
 
       render(newPoint, this.#eventListComponent.element);
