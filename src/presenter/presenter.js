@@ -4,7 +4,8 @@ import SortView from '/src/view/sort-view.js';
 import FilterView from '../view/filter-view.js';
 import EditorView from '/src/view/editor-view.js';
 import InfoView from '/src/view/info-view.js';
-import { render, replace } from '../framework/render.js';
+import AddNewPoint from '../view/add-new-point-view.js';
+import { remove, render, replace } from '../framework/render.js';
 
 export default class Presenter {
   #mainContainer;
@@ -12,6 +13,8 @@ export default class Presenter {
   #headerContainer;
   #controlsContainer;
   #eventListComponent = new EventList();
+  #sortViewComponent = new SortView();
+  #infoViewComponent = new InfoView ();
 
   constructor({container, pointsModel, headerContainer, controlsContainer}) {
     this.#mainContainer = container;
@@ -26,10 +29,15 @@ export default class Presenter {
     this.destinations = this.#pointsModel.destinations;
 
     render(new FilterView(), this.#headerContainer, 'afterbegin');
-    render(new InfoView(), this.#controlsContainer, 'afterbegin');
-    render(new SortView(), this.#mainContainer);
+    render(this.#infoViewComponent, this.#controlsContainer, 'afterbegin');
+    render(this.#sortViewComponent, this.#mainContainer);
     render(this.#eventListComponent, this.#mainContainer);
-
+    // console.log(SortView.element);
+    if (this.points.length === 0) {
+      render(new AddNewPoint(), this.#mainContainer);
+      remove(this.#sortViewComponent);
+      remove(this.#infoViewComponent);
+    }
     this.points.forEach((point) => {
       const escKeyDownHandler = (evt) => {
         if (evt.key === 'Escape') {
