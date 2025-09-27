@@ -15,15 +15,3 @@ export const ChecksTravelDate = {
   PAST: (dueDate) => dueDate && dayjs(dueDate).isBefore(dayjs(), 'D'),
   PRESENT: (dueDate) => dueDate && dayjs(dueDate).isSame(dayjs(), 'D')
 };
-
-// export function checksTravelIsSame(dueDate) {
-//   return dueDate && dayjs(dueDate).isSame(dayjs(), 'D');
-// }
-
-// export function checksTravelIsBefore(dueDate) {
-//   return dueDate && dayjs(dueDate).isBefore(dayjs(), 'D');
-// }
-
-// export function checksTravelIsAfter(dueDate) {
-//   return dueDate && dayjs(dueDate).isAfter(dayjs(), 'D');
-// }
