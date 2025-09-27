@@ -10,23 +10,37 @@ export const POINT_TYPES = [
   'Restaurant'
 ];
 
-export const DATE_FORMATS = {
-  mins: 'MM',
-  hoursMins: 'HH:mm',
-  daysHoursMins: 'DD:HH:mm',
-  day: 'MMM D'
+export const DateFormats = {
+  MINS: 'MM',
+  HOURS: 'HH:mm',
+  DAYS: 'DD:HH:mm',
+  MONTH: 'MMM D'
 };
 
-export const DURATION_FORMATS = {
-  minutes: {
+export const FilterTypes = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PRESENT: 'present',
+  PAST: 'past'
+};
+
+export const EmptyListMessages = {
+  EVERYTHING: 'Click New Event to create your first point',
+  FUTURE: 'There are no future events now',
+  PRESENT: 'There are no present events now',
+  PAST: 'There are no past events now'
+};
+
+export const DurationFormats = {
+  MINUTES: {
     max: 60,
     format: (mins) => `${mins} M`
   },
-  hours: {
+  HOURS: {
     max: 1440,
     format: (mins) => `${Math.floor(mins / 60)} H ${mins % 60} M`
   },
-  days: {
+  DAYS: {
     max: Infinity,
     format: (mins) => `${Math.floor(mins / 1440)} D ${Math.floor((mins % 1440) / 60)} H ${mins % 60} M`
   }

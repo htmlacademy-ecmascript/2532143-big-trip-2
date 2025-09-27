@@ -1,5 +1,5 @@
-import { humanizeDate, tripDuration } from '../utils.js';
-import { DATE_FORMATS } from '../consts.js';
+import { humanizeDate, tripDuration } from '../utils/point-utils.js';
+import { DateFormats } from '../consts.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
 function createOfferTemplate ({title, price}) {
@@ -13,24 +13,24 @@ function createOfferTemplate ({title, price}) {
 }
 
 function createPointTemplate(point, destinations, offers) {
+  const {type, destination, basePrice, isFavorite, dateFrom, dateTo} = point;
   const offersByType = offers.find((offer) => offer.type === point.type).offers;
   const choosenOffers = offersByType.filter((item) => point.offers.find((id) => item.id === id));
-  const {type, destination, basePrice, isFavorite, dateFrom, dateTo} = point;
   const name = destinations.find((destinationPoint) => destinationPoint.id === destination).name;
   const favoriteClass = isFavorite ? 'event__favorite-btn--active' : '';
   return (
     `<li class="trip-events__item">
       <div class="event">
-        <time class="event__date" datetime="2019-03-18">${humanizeDate(dateFrom, DATE_FORMATS.day)}</time>
+        <time class="event__date" datetime="2019-03-18">${humanizeDate(dateFrom, DateFormats.MONTH)}</time>
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
         </div>
         <h3 class="event__title">${type} ${name}</h3>
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="${humanizeDate(dateFrom)}">${humanizeDate(dateFrom, DATE_FORMATS.hoursMins)}</time>
+            <time class="event__start-time" datetime="${humanizeDate(dateFrom)}">${humanizeDate(dateFrom, DateFormats.HOURS)}</time>
             &mdash;
-            <time class="event__end-time" datetime="${humanizeDate(dateTo)}">${humanizeDate(dateTo, DATE_FORMATS.hoursMins)}</time>
+            <time class="event__end-time" datetime="${humanizeDate(dateTo)}">${humanizeDate(dateTo, DateFormats.HOURS)}</time>
           </p>
           <p class="event__duration">${tripDuration(dateFrom, dateTo)}</p>
         </div>

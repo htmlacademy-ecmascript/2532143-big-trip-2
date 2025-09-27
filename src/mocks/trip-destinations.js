@@ -31,5 +31,27 @@ export const mockDestinations = [
         description: 'Building'
       }
     ]
+  },
+  {
+    id: 4,
+    description: 'Athens is a capital of Greece',
+    name: 'Athens',
+    pictures: [
+      {
+        src: 'https://gidvezde.ru/wp-content/uploads/2025/02/4922244491_a0dbaacf19_b-1.jpg',
+        description: 'Athens` cathedral'
+      }
+    ]
+  },
+  {
+    id: 5,
+    description: 'Madrid is a capital of Spain Kingdom',
+    name: 'Madrid',
+    pictures: [
+      {
+        src: 'https://avatars.mds.yandex.net/i?id=d12f06e563abfc679cc0f3ee285ca3c0_l-4076159-images-thumbs&n=13',
+        description: 'Madrid`s` central place'
+      }
+    ]
   }
 ];
