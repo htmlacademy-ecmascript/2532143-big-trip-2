@@ -36,6 +36,26 @@ export const mockOffers = [
         id: 'flight-4',
         title: 'Take a pilot`s seat',
         price: 1200
+      },
+      {
+        id: 'flight-5',
+        title: 'turn off the light',
+        price: 25
+      },
+      {
+        id: 'flight-6',
+        title: 'Adjust the air conditioner',
+        price: 40
+      },
+      {
+        id: 'flight-7',
+        title: 'Business-lunch',
+        price: 400
+      },
+      {
+        id: 'flight-8',
+        title: 'Turn off the childs',
+        price: 0
       }
     ]
   },
