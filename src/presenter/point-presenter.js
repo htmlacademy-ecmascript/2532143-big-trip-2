@@ -4,7 +4,7 @@ import { render, replace } from '../framework/render.js';
 
 
 export default class PointPresenter {
-  #pointListComponent = null;
+  #pointListContainer = null;
   #pointComponent = null;
   #editPointComponent = null;
   #point = null;
@@ -12,7 +12,7 @@ export default class PointPresenter {
   #destinations = null;
 
   constructor({pointListContainer}) {
-    this.#pointListComponent = pointListContainer;
+    this.#pointListContainer = pointListContainer;
   }
 
   init(point, offers, destinations) {
@@ -35,7 +35,7 @@ export default class PointPresenter {
       onFormSubmit: this.#handleFormSubmit
     });
 
-    render(this.#pointComponent, this.#pointListComponent);
+    render(this.#pointComponent, this.#pointListContainer);
   }
 
   #escKeyDownHandler = (evt) => {

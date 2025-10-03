@@ -45,7 +45,7 @@ export default class MainPresenter {
     if (this.points.length === 0) {
       this.#renderEmptyList();
     } else {
-      this.#renderEventsList();
+      this.#renderPointList();
     }
 
   };
@@ -56,7 +56,7 @@ export default class MainPresenter {
     remove(this.#infoViewComponent);
   };
 
-  #renderEventsList = () => {
+  #renderPointList = () => {
     this.points.forEach((point) => {
       const pointPresenter = new PointPresenter({
         pointListContainer: this.#pointListComponent.element
