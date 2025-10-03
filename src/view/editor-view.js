@@ -137,7 +137,7 @@ function createEditorTemplate(point, destinations, offers) {
   );
 }
 
-export default class EditorView extends AbstractView{
+export default class EditorView extends AbstractView {
   #point = null;
   #destinations = null;
   #offers = null;
