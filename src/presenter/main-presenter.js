@@ -3,7 +3,7 @@ import SortView from '/src/view/sort-view.js';
 import FilterView from '../view/filter-view.js';
 import InfoView from '/src/view/info-view.js';
 import EmptyListView from '../view/empty-list-view.js';
-import { generateFilter } from '../mocks/trip-filter.js';
+import { generateFilter } from '../mocks/mock-filter.js';
 import { remove, render, RenderPosition } from '../framework/render.js';
 import PointPresenter from './point-presenter.js';
 
