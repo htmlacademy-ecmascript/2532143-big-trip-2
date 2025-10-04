@@ -6,6 +6,7 @@ import EmptyListView from '../view/empty-list-view.js';
 import { generateFilter } from '../mocks/mock-filter.js';
 import { remove, render, RenderPosition } from '../framework/render.js';
 import PointPresenter from './point-presenter.js';
+import { updateItem } from '../utils/command-utils.js';
 
 export default class MainPresenter {
   #mainContainer;
@@ -15,6 +16,10 @@ export default class MainPresenter {
   #pointListComponent = new PointListView();
   #sortViewComponent = new SortView();
   #infoViewComponent = new InfoView ();
+  #pointPresenters = new Map();
+  #points = [];
+  #offers = [];
+  #destinations = [];
 
   constructor({container, pointsModel, headerContainer, controlsContainer}) {
     this.#mainContainer = container;
@@ -24,16 +29,25 @@ export default class MainPresenter {
   }
 
   init() {
-    this.points = [...this.#pointsModel.points];
-    this.offers = this.#pointsModel.offers;
-    this.destinations = this.#pointsModel.destinations;
+    this.#points = [...this.#pointsModel.points];
+    this.#offers = this.#pointsModel.offers;
+    this.#destinations = this.#pointsModel.destinations;
 
     this.#renderFilters();
     this.#renderBoard();
   }
 
+  #handleModeChange = () => {
+    this.#pointPresenters.forEach((presenter) => presenter.resetView());
+  };
+
+  #handleTaskChange = (updatedPoint) => {
+    this.#points = updateItem(this.#points, updatedPoint);
+    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
+  };
+
   #renderFilters = () => {
-    const filters = generateFilter(this.points);
+    const filters = generateFilter(this.#points);
     render(new FilterView({ filters }), this.#headerContainer, RenderPosition.AFTERBEGIN);
   };
 
@@ -42,7 +56,7 @@ export default class MainPresenter {
     render(this.#sortViewComponent, this.#mainContainer);
     render(this.#pointListComponent, this.#mainContainer);
 
-    if (this.points.length === 0) {
+    if (this.#points.length === 0) {
       this.#renderEmptyList();
     } else {
       this.#renderPointList();
@@ -57,12 +71,20 @@ export default class MainPresenter {
   };
 
   #renderPointList = () => {
-    this.points.forEach((point) => {
+    this.#points.forEach((point) => {
       const pointPresenter = new PointPresenter({
-        pointListContainer: this.#pointListComponent.element
+        pointListContainer: this.#pointListComponent.element,
+        onDataChange: this.#handleTaskChange,
+        onModeChange: this.#handleModeChange,
       });
 
-      pointPresenter.init(point, this.offers, this.destinations);
+      pointPresenter.init(point, this.#offers, this.#destinations);
+      this.#pointPresenters.set(point.id, pointPresenter);
     });
   };
+
+  #clearPointList() {
+    this.#pointPresenters.forEach((presenter) => presenter.destroy());
+    this.#pointPresenters.clear();
+  }
 }
