@@ -160,8 +160,7 @@ export default class EditorView extends AbstractView {
     return createEditorTemplate(this.#point, this.#destinations, this.#offers);
   }
 
-  #editClickHandler = (evt) => {
-    evt.preventDefault();
+  #editClickHandler = () => {
     this.#handleEditClick();
   };
 

@@ -41,9 +41,9 @@ export default class MainPresenter {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 
-  #handleTaskChange = (updatedPoint) => {
+  #handlePointChange = (updatedPoint) => {
     this.#points = updateItem(this.#points, updatedPoint);
-    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
+    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint, this.#offers, this.#destinations);
   };
 
   #renderFilters = () => {
@@ -74,7 +74,7 @@ export default class MainPresenter {
     this.#points.forEach((point) => {
       const pointPresenter = new PointPresenter({
         pointListContainer: this.#pointListComponent.element,
-        onDataChange: this.#handleTaskChange,
+        onDataChange: this.#handlePointChange,
         onModeChange: this.#handleModeChange,
       });
 
