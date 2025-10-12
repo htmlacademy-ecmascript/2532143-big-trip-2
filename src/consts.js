@@ -45,3 +45,26 @@ export const DurationFormats = {
     format: (mins) => `${Math.floor(mins / 1440)} D ${Math.floor((mins % 1440) / 60)} H ${mins % 60} M`
   }
 };
+
+export const SortTypes = {
+  DAY: {
+    name: 'day',
+    isEnabled: true,
+  },
+  EVENT: {
+    name: 'event',
+    isEnabled: false,
+  },
+  TIME: {
+    name: 'time',
+    isEnabled: true,
+  },
+  PRICE: {
+    name: 'price',
+    isEnabled: true,
+  },
+  OFFERS: {
+    name: 'offers',
+    isEnabled: false,
+  }
+};

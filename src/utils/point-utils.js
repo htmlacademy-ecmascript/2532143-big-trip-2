@@ -15,3 +15,18 @@ export const ChecksTravelDate = {
   PAST: (dueDate) => dueDate && dayjs(dueDate).isBefore(dayjs(), 'D'),
   PRESENT: (dueDate) => dueDate && dayjs(dueDate).isSame(dayjs(), 'D')
 };
+
+export function sortByPrice(pointA, pointB) {
+  return pointA.basePrice - pointB.basePrice;
+}
+
+export function sortByTime(pointA, pointB) {
+  const pointADuration = getPointDuration(pointA);
+  const pointBDuration = getPointDuration(pointB);
+
+  return pointBDuration - pointADuration;
+}
+
+export function getPointDuration(point) {
+  return dayjs(point.dateTo).diff(dayjs(point.dateFrom));
+}
