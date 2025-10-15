@@ -16,7 +16,7 @@ export default class MainPresenter {
   #headerContainer;
   #controlsContainer;
   #pointListComponent = new PointListView();
-  #sortViewComponent = null;
+  #currentSort = null;
   #infoViewComponent = new InfoView ();
   #pointPresenters = new Map();
   #points = [];
@@ -60,24 +60,20 @@ export default class MainPresenter {
     this.#currentSortType = sortType;
   }
 
-  #handleSortTypeChange = (sortType) => {
-    if (sortType === this.#currentSortType) {
-      return;
-    }
-
+  #handleSortTypeChange = () => {
     this.#sortPoint(this.#sorts);
     this.#clearPointList();
     this.#renderPointList();
   };
 
   #renderSort() {
-    this.#sortViewComponent = new SortView({
+    this.#currentSort = new SortView({
       sorts: this.#sorts,
       onSortTypeChange: this.#handleSortTypeChange
     });
 
 
-    render(this.#sortViewComponent, this.#mainContainer, RenderPosition.AFTERBEGIN);
+    render(this.#currentSort, this.#mainContainer, RenderPosition.AFTERBEGIN);
   }
 
   #handleModeChange = () => {
@@ -109,7 +105,7 @@ export default class MainPresenter {
 
   #renderEmptyList = () => {
     render(new EmptyListView(), this.#mainContainer);
-    remove(this.#sortViewComponent);
+    remove(this.#currentSort);
     remove(this.#infoViewComponent);
   };
 
