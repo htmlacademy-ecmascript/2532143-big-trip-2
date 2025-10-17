@@ -1,6 +1,6 @@
 import { POINT_TYPES } from '../consts.js';
-import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeDate } from '../utils/point-utils.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
 function createTypeTemplate(type, currentType) {
   const isChecked = type.toLowerCase() === currentType ? 'checked' : '';
@@ -8,7 +8,7 @@ function createTypeTemplate(type, currentType) {
   return (
     `<div class="event__type-item">
         <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${isChecked}>
-        <label class="event__type-label  event__type-label--${type.toLowerCase()}" for="event-type-${type.to}-1">${type}
+        <label class="event__type-label  event__type-label--${type.toLowerCase()}" for="event-type-${type}-1">${type}
         </label>
       </div>`
   );
@@ -137,8 +137,7 @@ function createEditorTemplate(point, destinations, offers) {
   );
 }
 
-export default class EditorView extends AbstractView {
-  #point = null;
+export default class EditorView extends AbstractStatefulView {
   #destinations = null;
   #offers = null;
   #handleEditClick = null;
@@ -146,18 +145,17 @@ export default class EditorView extends AbstractView {
 
   constructor({point, destinations, offers, onEditClick, onFormSubmit}) {
     super();
-    this.#point = point;
+    this._setState(EditorView.parsePointToState(point));
     this.#destinations = destinations;
     this.#offers = offers;
     this.#handleEditClick = onEditClick;
     this.#handleFormSubmit = onFormSubmit;
 
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
-    this.element.addEventListener('submit', this.#formSubmitHandler);
+    this._restoreHandlers();
   }
 
   get template() {
-    return createEditorTemplate(this.#point, this.#destinations, this.#offers);
+    return createEditorTemplate(this._state, this.#destinations, this.#offers);
   }
 
   #editClickHandler = () => {
@@ -166,6 +164,39 @@ export default class EditorView extends AbstractView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit(this.#point);
+    this.#handleFormSubmit(this._state);
   };
+
+  #pointTypeChangeHandler = (evt) => {
+    this.updateElement({point: {...this._state.point, type: evt.target.value, offers: []}});
+  };
+
+  #pointDestinationChangeHandler = (evt) => {
+    const selectedDestination = this.#destinations.find((pointDestination) => pointDestination.name === evt.target.value);
+    const selectedDestinationId = (selectedDestination) ? selectedDestination.id : null;
+    this.updateElement({point: {...this._state.point, destination: selectedDestinationId}});
+  };
+
+  // #pointOfferChangeHandler = () => {
+  //   const checkedOffers = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'));
+
+  //   this._setState({point: {...this._state.point, offers: checkedOffers.map((item) => item.id)}});
+  // };
+
+  #pointPriceChangeHandler = (evt) => {
+    this._setState({point: {...this._state.point, basePrice: evt.target.value}});
+  };
+
+  _restoreHandlers() {
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
+    this.element.addEventListener('submit', this.#formSubmitHandler);
+    this.element.querySelector('.event__type-group').addEventListener('click', this.#pointTypeChangeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#pointDestinationChangeHandler);
+    // this.element.querySelector('.event__available-offers').addEventListener('change', this.#pointOfferChangeHandler);
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#pointPriceChangeHandler);
+  }
+
+  static parsePointToState(point) {
+    return {...point};
+  }
 }
