@@ -179,8 +179,8 @@ export default class EditorView extends AbstractStatefulView {
 
   #pointOfferChangeHandler = (evt) => {
     const checkedOffers = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'));
-    const choose = evt.target.checked;
-    this._setState({...this._state.point, offers: checkedOffers.map((item) => choose ? item.id : item.id)});
+    const selectedOffer = evt.target.checked;
+    this._setState({...this._state.point, offers: checkedOffers.map((item) => selectedOffer ? item.id : item.id)});
   };
 
   #pointPriceChangeHandler = (evt) => {
