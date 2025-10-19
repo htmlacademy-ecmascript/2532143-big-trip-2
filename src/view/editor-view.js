@@ -178,12 +178,12 @@ export default class EditorView extends AbstractStatefulView {
 
   #pointDateFromCloseHandler = ([userDate]) => {
     this._setState({...this._state.point, dateFrom: userDate});
-    this.#datePickerDateTo.set('minDate', this._state.point);
+    this.#datePickerDateTo.set('minDate', this._state.dateFrom);
   };
 
   #pointDateToCloseHandler = ([userDate]) => {
     this._setState({...this._state.point, dateTo: userDate});
-    this.#datePickerDateFrom.set('maxDate', this._state.point);
+    this.#datePickerDateFrom.set('maxDate', this._state.dateTo);
   };
 
   #setDatePickers = () => {
@@ -199,9 +199,9 @@ export default class EditorView extends AbstractStatefulView {
       pointDateFromElement,
       {
         ...commonConfigs,
-        defaultDate: this._state.point,
+        defaultDate: this._state.dateFrom,
         onClose: this.#pointDateFromCloseHandler,
-        maxDate: this._state.point
+        maxDate: this._state.dateTo
       }
     );
 
@@ -209,9 +209,9 @@ export default class EditorView extends AbstractStatefulView {
       pointDateToElement,
       {
         ...commonConfigs,
-        defaultDate: this._state.point,
+        defaultDate: this._state.dateTo,
         onClose: this.#pointDateToCloseHandler,
-        maxDate: this._state.point
+        maxDate: this._state.dateFrom
       }
     );
   };
