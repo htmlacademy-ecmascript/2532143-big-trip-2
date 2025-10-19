@@ -20,8 +20,8 @@ function createOfferTemplate(offerItem, checkedOffers) {
 
   return (
     `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${isChecked}>
-      <label class="event__offer-label" for="event-offer-luggage-1">
+      <input class="event__offer-checkbox  visually-hidden" id="${id}" type="checkbox" name="event-offer-luggage" ${isChecked}>
+      <label class="event__offer-label" for="${id}">
         <span class="event__offer-title">${title}</span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price">${price}</span>
@@ -74,7 +74,7 @@ function createDestinationTemplate(destinations, point) {
 
 function createEditorTemplate(point, destinations, offers) {
   const {type, destination, dateFrom, dateTo, basePrice} = point;
-  const name = destinations.find((destinationPoint) => destinationPoint.id === destination).name;
+  const name = destinations.find((destinationPoint) => destinationPoint.id === destination)?.name || '';
   const offersByType = offers.find((offer) => offer.type === point.type).offers;
   const choosenOffers = offersByType.filter((item) => point.offers.find((id) => item.id === id));
 
@@ -168,31 +168,31 @@ export default class EditorView extends AbstractStatefulView {
   };
 
   #pointTypeChangeHandler = (evt) => {
-    this.updateElement({point: {...this._state.point, type: evt.target.value, offers: []}});
+    this.updateElement({...this._state.point, type: evt.target.value.toLowerCase(), offers: []});
   };
 
   #pointDestinationChangeHandler = (evt) => {
     const selectedDestination = this.#destinations.find((pointDestination) => pointDestination.name === evt.target.value);
-    const selectedDestinationId = (selectedDestination) ? selectedDestination.id : null;
-    this.updateElement({point: {...this._state.point, destination: selectedDestinationId}});
+    const selectedDestinationId = (selectedDestination) ? selectedDestination.id : '';
+    this.updateElement({...this._state.point, destination: selectedDestinationId});
   };
 
-  // #pointOfferChangeHandler = () => {
-  //   const checkedOffers = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'));
-
-  //   this._setState({point: {...this._state.point, offers: checkedOffers.map((item) => item.id)}});
-  // };
+  #pointOfferChangeHandler = (evt) => {
+    const checkedOffers = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'));
+    const choose = evt.target.checked;
+    this._setState({...this._state.point, offers: checkedOffers.map((item) => choose ? item.id : '')});
+  };
 
   #pointPriceChangeHandler = (evt) => {
-    this._setState({point: {...this._state.point, basePrice: evt.target.value}});
+    this._setState({...this._state.point, basePrice: evt.target.value});
   };
 
   _restoreHandlers() {
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
     this.element.addEventListener('submit', this.#formSubmitHandler);
-    this.element.querySelector('.event__type-group').addEventListener('click', this.#pointTypeChangeHandler);
+    this.element.querySelector('.event__type-group').addEventListener('change', this.#pointTypeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#pointDestinationChangeHandler);
-    // this.element.querySelector('.event__available-offers').addEventListener('change', this.#pointOfferChangeHandler);
+    this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#pointOfferChangeHandler);
     this.element.querySelector('.event__input--price').addEventListener('change', this.#pointPriceChangeHandler);
   }
 
