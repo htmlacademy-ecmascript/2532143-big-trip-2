@@ -12,8 +12,8 @@ function createSortTemplate(sortItems) {
 function createSortItemTemplate(sort) {
   return (
     `<div class="trip-sort__item  trip-sort__item--${sort.name}">
-      <input id="sort-${sort.name}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${sort.name}" ${sort.isEnabled === true ? '' : 'disabled'}>
-        <label class="trip-sort__btn" for="sort-${sort.name}">${sort.name}</label>
+      <input id="${sort.name}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="${sort.name}" ${sort.isEnabled === true ? '' : 'disabled'}>
+        <label class="trip-sort__btn" for="${sort.name}">${sort.name}</label>
     </div>`
   );
 }

@@ -6,9 +6,8 @@ import EmptyListView from '../view/empty-list-view.js';
 import { generateFilter } from '../mocks/mock-filter.js';
 import { remove, render, RenderPosition } from '../framework/render.js';
 import PointPresenter from './point-presenter.js';
-// import { updateItem } from '../utils/command-utils.js';
 import { SortTypes } from '../consts.js';
-import { sortByPrice, sortByTime } from '../utils/point-utils.js';
+import { sortByTime, sortByPrice, sortByDay } from '../utils/point-utils.js';
 
 export default class MainPresenter {
   #mainContainer;
@@ -32,7 +31,7 @@ export default class MainPresenter {
   get points() {
     switch (this.#currentSortType) {
       case SortTypes.DAY.name:
-        return [...this.#pointsModel.points];
+        return [...this.#pointsModel.points].sort(sortByDay);
       case SortTypes.TIME.name:
         return [...this.#pointsModel.points].sort(sortByTime);
       case SortTypes.PRICE.name:
@@ -108,6 +107,7 @@ export default class MainPresenter {
         pointListContainer: this.#pointListComponent.element,
         onDataChange: this.#handlePointChange,
         onModeChange: this.#handleModeChange,
+        onSortTypeChange: this.#handleSortTypeChange
       });
 
       pointPresenter.init(point, this.offers, this.destinations);

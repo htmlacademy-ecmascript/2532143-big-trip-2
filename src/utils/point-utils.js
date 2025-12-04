@@ -27,6 +27,10 @@ export function sortByTime(pointA, pointB) {
   return pointBDuration - pointADuration;
 }
 
+export function sortByDay(pointA, pointB) {
+  return dayjs(pointA.dateFrom) - dayjs(pointB.dateFrom);
+}
+
 export function getPointDuration(point) {
   return dayjs(point.dateTo).diff(dayjs(point.dateFrom));
 }
