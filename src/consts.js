@@ -68,3 +68,6 @@ export const SortTypes = {
     isEnabled: false,
   }
 };
+
+export const DEFAULT_FILTER_TYPE = FilterTypes.EVERYTHING;
+export const DEFAULT_SORT_TYPE = SortTypes.DAY.name;

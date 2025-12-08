@@ -6,7 +6,7 @@ import EmptyListView from '../view/empty-list-view.js';
 import { generateFilter } from '../mocks/mock-filter.js';
 import { remove, render, RenderPosition } from '../framework/render.js';
 import PointPresenter from './point-presenter.js';
-import { SortTypes } from '../consts.js';
+import { FilterTypes, SortTypes } from '../consts.js';
 import { sortByTime, sortByPrice, sortByDay } from '../utils/point-utils.js';
 
 export default class MainPresenter {
@@ -20,6 +20,7 @@ export default class MainPresenter {
   #pointPresenters = new Map();
   #sorts = SortTypes;
   #currentSortType = SortTypes.DAY.name;
+  #currentFilterType = FilterTypes.EVERYTHING;
 
   constructor({container, pointsModel, headerContainer, controlsContainer}) {
     this.#mainContainer = container;
@@ -80,7 +81,15 @@ export default class MainPresenter {
 
   #renderFilters = () => {
     const filters = generateFilter(this.points);
-    render(new FilterView({ filters }), this.#headerContainer, RenderPosition.AFTERBEGIN);
+    render(new FilterView({ filters, onFilterChange: this.#handleFilterChange}), this.#headerContainer, RenderPosition.AFTERBEGIN);
+  };
+
+  #handleFilterChange = (name) => {
+    if (name !== this.#currentFilterType) {
+      this.#clearPointList();
+      this.#currentFilterType = name;
+      this.#renderPointList();
+    }
   };
 
   #renderBoard = () => {
@@ -107,7 +116,8 @@ export default class MainPresenter {
         pointListContainer: this.#pointListComponent.element,
         onDataChange: this.#handlePointChange,
         onModeChange: this.#handleModeChange,
-        onSortTypeChange: this.#handleSortTypeChange
+        onSortTypeChange: this.#handleSortTypeChange,
+        onFilterChange: this.#handleFilterChange
       });
 
       pointPresenter.init(point, this.offers, this.destinations);
