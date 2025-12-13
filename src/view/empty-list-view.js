@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { EmptyListMessages } from '../consts.js';
+import { EmptyListMessages } from '../const.js';
 
 function emptyListMessage () {
   return (

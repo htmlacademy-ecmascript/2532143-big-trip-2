@@ -1,5 +1,5 @@
 import { humanizeDate, tripDuration } from '../utils/point-utils.js';
-import { DateFormats } from '../consts.js';
+import { DateFormats } from '../const.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
 function createOfferTemplate ({title, price}) {

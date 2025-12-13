@@ -6,7 +6,7 @@ import EmptyListView from '../view/empty-list-view.js';
 import { generateFilter } from '../mocks/mock-filter.js';
 import { remove, render, RenderPosition } from '../framework/render.js';
 import PointPresenter from './point-presenter.js';
-import { FilterTypes, SortTypes } from '../consts.js';
+import { FilterTypes, SortTypes, UpdateType, UserAction } from '../const.js';
 import { sortByTime, sortByPrice, sortByDay } from '../utils/point-utils.js';
 
 export default class MainPresenter {
@@ -27,6 +27,8 @@ export default class MainPresenter {
     this.#pointsModel = pointsModel;
     this.#headerContainer = headerContainer;
     this.#controlsContainer = controlsContainer;
+
+    this.#pointsModel.addObserver(this.#handleModelEvent);
   }
 
   get points() {
@@ -57,8 +59,7 @@ export default class MainPresenter {
 
   #handleSortTypeChange = (sortType) => {
     this.#currentSortType = sortType;
-    this.#clearPointList();
-    this.#renderPointList();
+    this.#handleModelEvent(UpdateType.MINOR);
   };
 
   #renderSort() {
@@ -75,8 +76,37 @@ export default class MainPresenter {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 
-  #handlePointChange = (updatedPoint) => {
-    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint, this.offers, this.destinations);
+  #handleViewAction = (actionType, updateType, update) => {
+    switch (actionType) {
+      case UserAction.UPDATE_POINT:
+        this.#pointsModel.updatePoint(updateType, update);
+        break;
+      case UserAction.ADD_POINT:
+        this.#pointsModel.addPoint(updateType, update);
+        break;
+      case UserAction.DELETE_POINT:
+        this.#pointsModel.deletePoint(updateType, update);
+        break;
+      default:
+        throw new Error(`Unknown action type: ${actionType}`);
+    }
+  };
+
+  #handleModelEvent = (updateType, data, actionType) => {
+    switch (updateType) {
+      case UpdateType.PATCH:
+        this.#pointPresenters.get(data.id).init(data, this.offers, this.destinations);
+        break;
+      case UpdateType.MINOR:
+        this.#clearPointList();
+        this.#renderBoard();
+        break;
+      case UpdateType.MAJOR:
+        // - обновить всю доску (например, при переключении фильтра)
+        break;
+      default:
+        throw new Error(`Unknown action type: ${actionType}`);
+    }
   };
 
   #renderFilters = () => {
@@ -114,7 +144,7 @@ export default class MainPresenter {
     this.points.forEach((point) => {
       const pointPresenter = new PointPresenter({
         pointListContainer: this.#pointListComponent.element,
-        onDataChange: this.#handlePointChange,
+        onDataChange: this.#handleViewAction,
         onModeChange: this.#handleModeChange,
         onSortTypeChange: this.#handleSortTypeChange,
         onFilterChange: this.#handleFilterChange

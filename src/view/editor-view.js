@@ -1,4 +1,4 @@
-import { POINT_TYPES } from '../consts.js';
+import { POINT_TYPES } from '../const.js';
 import { humanizeDate } from '../utils/point-utils.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';

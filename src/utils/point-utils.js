@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { DurationFormats } from '../consts.js';
+import { DurationFormats } from '../const.js';
 
 export function humanizeDate(date, format) {
   return date ? dayjs(date).format(format) : '';

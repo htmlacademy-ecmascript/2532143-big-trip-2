@@ -2,7 +2,6 @@ import { mockPoints } from '../mocks/mock-points.js';
 import { mockDestinations } from '../mocks/mock-destinations.js';
 import { mockOffers } from '../mocks/mock-offers.js';
 import Observable from '../framework/observable.js';
-import { updateItem } from '../utils/command-utils.js';
 
 export default class PointsModel extends Observable {
   #points = mockPoints;
@@ -25,10 +24,10 @@ export default class PointsModel extends Observable {
     return this.#offers;
   }
 
-  updatePoint(updateType, updatedPoint) {
-    this.#points = updateItem(this.#points, updatedPoint);
+  updatePoint(updateType, update) {
+    this.#points = this.#points.map((point) => point.id === update.id ? update : point);
 
-    this._notify(updateType, updatedPoint.id);
+    this._notify(updateType, update);
   }
 
   addPoint(updateType, newPoint) {

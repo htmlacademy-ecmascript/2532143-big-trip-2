@@ -1,4 +1,4 @@
-import { FilterTypes } from '../consts.js';
+import { FilterTypes } from '../const.js';
 import { ChecksTravelDate } from './point-utils.js';
 
 export const filter = {
