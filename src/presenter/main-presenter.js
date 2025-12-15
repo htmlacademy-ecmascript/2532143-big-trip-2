@@ -34,11 +34,11 @@ export default class MainPresenter {
   get points() {
     switch (this.#currentSortType) {
       case SortTypes.DAY.name:
-        return [...this.#pointsModel.points].sort(sortByDay);
+        return this.#pointsModel.points.toSorted(sortByDay);
       case SortTypes.TIME.name:
-        return [...this.#pointsModel.points].sort(sortByTime);
+        return this.#pointsModel.points.toSorted(sortByTime);
       case SortTypes.PRICE.name:
-        return [...this.#pointsModel.points].sort(sortByPrice);
+        return this.#pointsModel.points.toSorted(sortByPrice);
     }
     return this.#pointsModel.points;
   }

@@ -46,7 +46,8 @@ export default class PointPresenter {
       offers: this.#offers,
       destinations: this.#destinations,
       onEditClick: this.#handlePointClick,
-      onFormSubmit: this.#handleFormSubmit
+      onFormSubmit: this.#handleFormSubmit,
+      onDeletePoint: this.#handleDeletePoint
     });
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
@@ -81,7 +82,6 @@ export default class PointPresenter {
     if (evt.key === 'Escape') {
       evt.preventDefault();
       this.#replaceFormToPoint();
-      document.removeEventListener('keydown', this.#escKeyDownHandler);
     }
   };
 
@@ -118,7 +118,16 @@ export default class PointPresenter {
     this.#handleDataChange(
       UserAction.UPDATE_POINT,
       UpdateType.PATCH,
-      point);
+      point
+    );
     this.#replaceFormToPoint();
+  };
+
+  #handleDeletePoint = (point) => {
+    this.#handleDataChange(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      point
+    );
   };
 }
