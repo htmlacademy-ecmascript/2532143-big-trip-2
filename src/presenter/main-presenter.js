@@ -1,13 +1,12 @@
 import PointListView from '/src/view/point-list-view.js';
 import SortView from '/src/view/sort-view.js';
-import FilterView from '../view/filter-view.js';
 import InfoView from '/src/view/info-view.js';
 import EmptyListView from '../view/empty-list-view.js';
-import { generateFilter } from '../mocks/mock-filter.js';
 import { remove, render, RenderPosition } from '../framework/render.js';
 import PointPresenter from './point-presenter.js';
 import { FilterTypes, SortTypes, UpdateType, UserAction } from '../const.js';
 import { sortByTime, sortByPrice, sortByDay } from '../utils/point-utils.js';
+import { filter } from '../utils/filter-util.js';
 
 export default class MainPresenter {
   #mainContainer;
@@ -21,26 +20,34 @@ export default class MainPresenter {
   #sorts = SortTypes;
   #currentSortType = SortTypes.DAY.name;
   #currentFilterType = FilterTypes.EVERYTHING;
+  #filterModel = null;
+  #emptyListComponent = null;
 
-  constructor({container, pointsModel, headerContainer, controlsContainer}) {
+  constructor({container, pointsModel, headerContainer, controlsContainer, filterModel}) {
     this.#mainContainer = container;
     this.#pointsModel = pointsModel;
     this.#headerContainer = headerContainer;
     this.#controlsContainer = controlsContainer;
+    this.#filterModel = filterModel;
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get points() {
+    this.#currentFilterType = this.#filterModel.filter;
+    const points = this.#pointsModel.points;
+    const filteredPoints = filter[this.#currentFilterType](points);
+
     switch (this.#currentSortType) {
       case SortTypes.DAY.name:
-        return this.#pointsModel.points.toSorted(sortByDay);
+        return filteredPoints.toSorted(sortByDay);
       case SortTypes.TIME.name:
-        return this.#pointsModel.points.toSorted(sortByTime);
+        return filteredPoints.toSorted(sortByTime);
       case SortTypes.PRICE.name:
-        return this.#pointsModel.points.toSorted(sortByPrice);
+        return filteredPoints.toSorted(sortByPrice);
     }
-    return this.#pointsModel.points;
+    return filteredPoints;
   }
 
   get offers() {
@@ -52,7 +59,6 @@ export default class MainPresenter {
   }
 
   init() {
-    this.#renderFilters();
     this.#renderBoard();
     this.#renderSort();
   }
@@ -102,17 +108,14 @@ export default class MainPresenter {
         this.#renderBoard();
         break;
       case UpdateType.MAJOR:
-        // - обновить всю доску (например, при переключении фильтра)
+        this.#clearPointList({resetSortType: true});
+        this.#renderBoard();
         break;
       default:
         throw new Error(`Unknown action type: ${actionType}`);
     }
   };
 
-  #renderFilters = () => {
-    const filters = generateFilter(this.points);
-    render(new FilterView({ filters, onFilterChange: this.#handleFilterChange}), this.#headerContainer, RenderPosition.AFTERBEGIN);
-  };
 
   #handleFilterChange = (name) => {
     if (name !== this.#currentFilterType) {
@@ -135,7 +138,10 @@ export default class MainPresenter {
   };
 
   #renderEmptyList = () => {
-    render(new EmptyListView(), this.#mainContainer);
+    this.#emptyListComponent = new EmptyListView({
+      filterType: this.#currentFilterType
+    });
+    render(this.#emptyListComponent, this.#mainContainer);
     remove(this.#currentSort);
     remove(this.#infoViewComponent);
   };
@@ -155,8 +161,11 @@ export default class MainPresenter {
     });
   };
 
-  #clearPointList() {
+  #clearPointList({resetSortType = false} = {}) {
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
+    if (resetSortType) {
+      this.#currentSortType = SortTypes.DAY.name;
+    }
   }
 }
