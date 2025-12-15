@@ -4,9 +4,10 @@ import InfoView from '/src/view/info-view.js';
 import EmptyListView from '../view/empty-list-view.js';
 import { remove, render, RenderPosition } from '../framework/render.js';
 import PointPresenter from './point-presenter.js';
-import { FilterTypes, SortTypes, UpdateType, UserAction } from '../const.js';
+import { DEFAULT_FILTER_TYPE, DEFAULT_SORT_TYPE, FilterTypes, SortTypes, UpdateType, UserAction } from '../const.js';
 import { sortByTime, sortByPrice, sortByDay } from '../utils/point-utils.js';
 import { filter } from '../utils/filter-util.js';
+import NewPointPresenter from './new-point-presenter.js';
 
 export default class MainPresenter {
   #mainContainer;
@@ -18,17 +19,24 @@ export default class MainPresenter {
   #infoViewComponent = new InfoView ();
   #pointPresenters = new Map();
   #sorts = SortTypes;
-  #currentSortType = SortTypes.DAY.name;
-  #currentFilterType = FilterTypes.EVERYTHING;
+  #currentSortType = DEFAULT_SORT_TYPE;
+  #currentFilterType = DEFAULT_FILTER_TYPE;
   #filterModel = null;
   #emptyListComponent = null;
+  #newPointPresenter = null;
 
-  constructor({container, pointsModel, headerContainer, controlsContainer, filterModel}) {
+  constructor({container, pointsModel, headerContainer, controlsContainer, filterModel, onNewPointDestroy}) {
     this.#mainContainer = container;
     this.#pointsModel = pointsModel;
     this.#headerContainer = headerContainer;
     this.#controlsContainer = controlsContainer;
     this.#filterModel = filterModel;
+
+    this.#newPointPresenter = new NewPointPresenter({
+      pointListContainer: this.#pointListComponent.element,
+      onDataChange: this.#handleViewAction,
+      onDestroy: onNewPointDestroy
+    });
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -63,6 +71,12 @@ export default class MainPresenter {
     this.#renderSort();
   }
 
+  createPoint() {
+    this.#currentSortType = DEFAULT_SORT_TYPE;
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterTypes.EVERYTHING);
+    this.#newPointPresenter.init(this.points[0], this.offers, this.destinations);
+  }
+
   #handleSortTypeChange = (sortType) => {
     this.#currentSortType = sortType;
     this.#handleModelEvent(UpdateType.MINOR);
@@ -79,6 +93,7 @@ export default class MainPresenter {
   }
 
   #handleModeChange = () => {
+    this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 
@@ -119,9 +134,7 @@ export default class MainPresenter {
 
   #handleFilterChange = (name) => {
     if (name !== this.#currentFilterType) {
-      this.#clearPointList();
       this.#currentFilterType = name;
-      this.#renderPointList();
     }
   };
 
@@ -162,10 +175,11 @@ export default class MainPresenter {
   };
 
   #clearPointList({resetSortType = false} = {}) {
+    this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
     if (resetSortType) {
-      this.#currentSortType = SortTypes.DAY.name;
+      this.#currentSortType = DEFAULT_SORT_TYPE;
     }
   }
 }

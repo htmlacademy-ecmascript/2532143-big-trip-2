@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import { UpdateType, UserAction } from '../const.js';
 import { remove, RenderPosition, render } from '../framework/render.js';
 import EditorView from '../view/editor-view.js';
@@ -33,7 +34,6 @@ export default class NewPointPresenter {
       offers: this.#offers,
       destinations: this.#destinations,
       onFormSubmit: this.#handleFormSubmit,
-      onEditClick: this.#handlePointClick,
       onDeletePoint: this.#handleDeletePoint
     });
 
@@ -54,26 +54,15 @@ export default class NewPointPresenter {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
-  #handleDeletePoint = (point) => {
-    this.#handleDataChange(
-      UserAction.DELETE_POINT,
-      UpdateType.MINOR,
-      point
-    );
+  #handleDeletePoint = () => {
+    this.destroy();
   };
-
-  #handlePointClick = () => {
-    this.#replaceFormToPoint();
-  };
-
-  #replaceFormToPoint() {
-  }
 
   #handleFormSubmit = (point) => {
     this.#handleDataChange(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
-      point
+      {id: nanoid, ...point}
     );
     this.destroy();
   };

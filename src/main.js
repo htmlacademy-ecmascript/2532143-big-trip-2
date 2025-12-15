@@ -1,7 +1,9 @@
+import { render } from './framework/render.js';
 import FilterModel from './model/filter-model.js';
 import PointsModel from './model/point-model.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import MainPresenter from './presenter/main-presenter.js';
+import NewAddPointButton from './view/add-new-point-button-view.js';
 
 const mainContainer = document.querySelector('.trip-events');
 const pointsModel = new PointsModel();
@@ -18,8 +20,24 @@ const viewPresenter = new MainPresenter({
   pointsModel,
   headerContainer,
   controlsContainer,
-  filterModel
+  filterModel,
+  onNewPointDestroy: handleNewPointFormClose
 });
+
+const newPointButtonComponent = new NewAddPointButton({
+  onAddButtonClick: handleNewAddButtonClick,
+});
+
+function handleNewPointFormClose() {
+  newPointButtonComponent.element.disabled = false;
+}
+
+function handleNewAddButtonClick() {
+  viewPresenter.createPoint();
+  newPointButtonComponent.element.disabled = true;
+}
+
+render(newPointButtonComponent, controlsContainer);
 
 filterPresenter.init();
 viewPresenter.init();
