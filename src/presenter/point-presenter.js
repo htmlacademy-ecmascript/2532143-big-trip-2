@@ -18,6 +18,7 @@ export default class PointPresenter {
   #handleDataChange = null;
   #mode = Mode.DEFAULT;
   #handleModeChange = null;
+  #editMode = null;
 
   constructor({pointListContainer, onDataChange, onModeChange}) {
     this.#pointListContainer = pointListContainer;
@@ -47,7 +48,8 @@ export default class PointPresenter {
       destinations: this.#destinations,
       onEditClick: this.#handlePointClick,
       onFormSubmit: this.#handleFormSubmit,
-      onDeletePoint: this.#handleDeletePoint
+      onDeletePoint: this.#handleDeletePoint,
+      isEditMode: true
     });
 
     if (prevPointComponent === null || prevPointEditComponent === null) {

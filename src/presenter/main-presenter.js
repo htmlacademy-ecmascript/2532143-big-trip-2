@@ -4,7 +4,7 @@ import InfoView from '/src/view/info-view.js';
 import EmptyListView from '../view/empty-list-view.js';
 import { remove, render, RenderPosition } from '../framework/render.js';
 import PointPresenter from './point-presenter.js';
-import { DEFAULT_FILTER_TYPE, DEFAULT_SORT_TYPE, FilterTypes, SortTypes, UpdateType, UserAction } from '../const.js';
+import { BLANK_POINT, DEFAULT_FILTER_TYPE, DEFAULT_SORT_TYPE, FilterTypes, SortTypes, UpdateType, UserAction } from '../const.js';
 import { sortByTime, sortByPrice, sortByDay } from '../utils/point-utils.js';
 import { filter } from '../utils/filter-util.js';
 import NewPointPresenter from './new-point-presenter.js';
@@ -74,7 +74,8 @@ export default class MainPresenter {
   createPoint() {
     this.#currentSortType = DEFAULT_SORT_TYPE;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterTypes.EVERYTHING);
-    this.#newPointPresenter.init(this.points[0], this.offers, this.destinations);
+    this.#newPointPresenter.init(BLANK_POINT, this.offers, this.destinations);
+
   }
 
   #handleSortTypeChange = (sortType) => {

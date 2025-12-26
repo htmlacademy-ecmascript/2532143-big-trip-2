@@ -83,3 +83,13 @@ export const UpdateType = {
 
 export const DEFAULT_FILTER_TYPE = FilterTypes.EVERYTHING;
 export const DEFAULT_SORT_TYPE = SortTypes.DAY.name;
+
+export const BLANK_POINT = {
+  basePrice: 0,
+  dateFrom: null,
+  dateTo: null,
+  destination: null,
+  isFavorite: false,
+  offers: [],
+  type: 'flight'
+};

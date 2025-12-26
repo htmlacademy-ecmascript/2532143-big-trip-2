@@ -1,4 +1,3 @@
-import { nanoid } from 'nanoid';
 import { UpdateType, UserAction } from '../const.js';
 import { remove, RenderPosition, render } from '../framework/render.js';
 import EditorView from '../view/editor-view.js';
@@ -34,11 +33,12 @@ export default class NewPointPresenter {
       offers: this.#offers,
       destinations: this.#destinations,
       onFormSubmit: this.#handleFormSubmit,
-      onDeletePoint: this.#handleDeletePoint
+      onDeletePoint: this.#handleDeletePoint,
+      isEditMode: false
     });
 
+    document.addEventListener('keydown', this.#escKeyDownHandler);
     render(this.#editPointComponent, this.#pointListContainer, RenderPosition.AFTERBEGIN);
-
   }
 
   destroy() {
@@ -62,7 +62,7 @@ export default class NewPointPresenter {
     this.#handleDataChange(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
-      {id: nanoid, ...point}
+      point
     );
     this.destroy();
   };
