@@ -18,7 +18,6 @@ export default class PointPresenter {
   #handleDataChange = null;
   #mode = Mode.DEFAULT;
   #handleModeChange = null;
-  #editMode = null;
 
   constructor({pointListContainer, onDataChange, onModeChange}) {
     this.#pointListContainer = pointListContainer;

@@ -1,3 +1,5 @@
+import { formatDurationValue } from './utils/point-utils.js';
+
 export const POINT_TYPES = [
   'Taxi',
   'Bus',
@@ -34,15 +36,24 @@ export const EmptyListMessages = {
 export const DurationFormats = {
   MINUTES: {
     max: 60,
-    format: (mins) => `${mins} M`
+    format: (mins) => `${formatDurationValue(mins, 'M')}`
   },
   HOURS: {
     max: 1440,
-    format: (mins) => `${Math.floor(mins / 60)} H ${mins % 60} M`
+    format: (mins) => {
+      const hours = Math.floor(mins / 60);
+      const minutes = mins % 60;
+      return `${formatDurationValue(hours, 'H')} ${formatDurationValue(minutes, 'M')}`;
+    }
   },
   DAYS: {
     max: Infinity,
-    format: (mins) => `${Math.floor(mins / 1440)} D ${Math.floor((mins % 1440) / 60)} H ${mins % 60} M`
+    format: (mins) => {
+      const days = Math.floor(mins / 1440);
+      const hours = Math.floor((mins % 1440) / 60);
+      const minutes = mins % 60;
+      return `${formatDurationValue(days, 'D')} ${formatDurationValue(hours, 'H')} ${formatDurationValue(minutes, 'M')}`;
+    }
   }
 };
 
