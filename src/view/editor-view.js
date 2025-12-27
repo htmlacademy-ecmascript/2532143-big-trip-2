@@ -4,6 +4,7 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { BLANK_POINT } from '../const.js';
+import dayjs from 'dayjs';
 
 function createTypeTemplate(type, currentType) {
   const isChecked = type.toLowerCase() === currentType ? 'checked' : '';
@@ -141,7 +142,7 @@ function createEditorTemplate(point, destinations, offers, isEditMode) {
       </header>
       <section class="event__details">
           ${renderOffers(offersByType, choosenOffers)}
-          ${isEditMode ? createDestinationTemplate(destinations, point) : ''}
+          ${destination ? createDestinationTemplate(destinations, point) : ''}
       </section>
     </form>`
   );
@@ -192,16 +193,17 @@ export default class EditorView extends AbstractStatefulView {
 
   #pointDateFromCloseHandler = ([userDate]) => {
     this._setState({...this._state.point, dateFrom: userDate});
-    this.#datePickerDateTo.set('minDate', this._state.dateFrom);
+    this.#datePickerDateTo.set('minDate', userDate);
   };
 
   #pointDateToCloseHandler = ([userDate]) => {
     this._setState({...this._state.point, dateTo: userDate});
-    this.#datePickerDateFrom.set('maxDate', this._state.dateTo);
+    this.#datePickerDateFrom.set('maxDate', userDate);
   };
 
   #setDatePickers = () => {
     const [pointDateFromElement, pointDateToElement] = this.element.querySelectorAll('.event__input--time');
+    const currentDate = dayjs().toISOString();
     const commonConfigs = {
       dateFormat: 'd/m/Y H:i',
       enableTime: true,
@@ -213,9 +215,9 @@ export default class EditorView extends AbstractStatefulView {
       pointDateFromElement,
       {
         ...commonConfigs,
-        defaultDate: this._state.dateFrom,
+        defaultDate: currentDate,
         onClose: this.#pointDateFromCloseHandler,
-        maxDate: this._state.dateTo
+        minDate: currentDate,
       }
     );
 
@@ -223,9 +225,9 @@ export default class EditorView extends AbstractStatefulView {
       pointDateToElement,
       {
         ...commonConfigs,
-        defaultDate: this._state.dateTo,
+        defaultDate: currentDate,
         onClose: this.#pointDateToCloseHandler,
-        maxDate: this._state.dateFrom
+        minDate: currentDate,
       }
     );
   };
@@ -248,7 +250,6 @@ export default class EditorView extends AbstractStatefulView {
   };
 
   #pointDestinationChangeHandler = (evt) => {
-    this.#isEditMode = true;
     const selectedDestination = this.#destinations.find((pointDestination) => pointDestination.name === evt.target.value);
     const selectedDestinationId = (selectedDestination) ? selectedDestination.id : '';
     this.updateElement({...this._state.point, destination: selectedDestinationId});
