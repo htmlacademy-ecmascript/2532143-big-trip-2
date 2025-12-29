@@ -8,6 +8,7 @@ import { BLANK_POINT, DEFAULT_FILTER_TYPE, DEFAULT_SORT_TYPE, FilterTypes, SortT
 import { sortByTime, sortByPrice, sortByDay } from '../utils/point-utils.js';
 import { filter } from '../utils/filter-util.js';
 import NewPointPresenter from './new-point-presenter.js';
+import LoadingView from '../view/loading-view.js';
 
 export default class MainPresenter {
   #mainContainer;
@@ -24,6 +25,8 @@ export default class MainPresenter {
   #filterModel = null;
   #emptyListComponent = null;
   #newPointPresenter = null;
+  #loadingComponent = new LoadingView();
+  #isLoading = true;
 
   constructor({container, pointsModel, headerContainer, controlsContainer, filterModel, onNewPointDestroy}) {
     this.#mainContainer = container;
@@ -127,6 +130,11 @@ export default class MainPresenter {
         this.#clearPointList({resetSortType: true});
         this.#renderBoard();
         break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderBoard();
+        break;
       default:
         throw new Error(`Unknown action type: ${actionType}`);
     }
@@ -140,6 +148,12 @@ export default class MainPresenter {
   };
 
   #renderBoard = () => {
+    if (this.#isLoading) {
+      this.#renderLoading();
+
+      return;
+    }
+
     render(this.#infoViewComponent, this.#controlsContainer, RenderPosition.AFTERBEGIN);
     render(this.#pointListComponent, this.#mainContainer);
 
@@ -174,6 +188,10 @@ export default class MainPresenter {
       this.#pointPresenters.set(point.id, pointPresenter);
     });
   };
+
+  #renderLoading() {
+    render(this.#loadingComponent, this.#mainContainer, RenderPosition.AFTERBEGIN);
+  }
 
   #clearPointList({resetSortType = false} = {}) {
     this.#newPointPresenter.destroy();

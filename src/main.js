@@ -1,12 +1,18 @@
 import { render } from './framework/render.js';
 import FilterModel from './model/filter-model.js';
 import PointsModel from './model/point-model.js';
+import PointsApiService from './points-api-service.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import MainPresenter from './presenter/main-presenter.js';
 import NewAddPointButton from './view/add-new-point-button-view.js';
 
+const AUTHORIZATION = 'Basic eo0w590ik29800a';
+const END_POINT = 'https://22.objects.htmlacademy.pro/big-trip';
+
 const mainContainer = document.querySelector('.trip-events');
-const pointsModel = new PointsModel();
+const pointsModel = new PointsModel({
+  pointsApiService: new PointsApiService(END_POINT, AUTHORIZATION)
+});
 const headerContainer = document.querySelector('.trip-controls');
 const controlsContainer = document.querySelector('.trip-main');
 const filterModel = new FilterModel();
@@ -15,7 +21,7 @@ const filterPresenter = new FilterPresenter({
   filterModel,
   pointsModel
 });
-const viewPresenter = new MainPresenter({
+const mainPresenter = new MainPresenter({
   container: mainContainer,
   pointsModel,
   headerContainer,
@@ -33,11 +39,12 @@ function handleNewPointFormClose() {
 }
 
 function handleNewAddButtonClick() {
-  viewPresenter.createPoint();
+  mainPresenter.createPoint();
   newPointButtonComponent.element.disabled = true;
 }
 
-render(newPointButtonComponent, controlsContainer);
-
 filterPresenter.init();
-viewPresenter.init();
+mainPresenter.init();
+pointsModel.init().finally(() => {
+  render(newPointButtonComponent, controlsContainer);
+});
