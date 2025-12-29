@@ -1,11 +1,20 @@
 import dayjs from 'dayjs';
-import { DurationFormats } from '../consts.js';
+import { DurationFormats } from '../const.js';
 
 export function humanizeDate(date, format) {
   return date ? dayjs(date).format(format) : '';
 }
 
-export function tripDuration(startTime, endTime) {
+export function formatDurationValue(value, symbol) {
+  if (value <= 0) {
+
+    return '';
+  }
+
+  return `${String(value).padStart(2, '0')}${symbol}`;
+}
+
+export function calculateTripDuration(startTime, endTime) {
   const mins = dayjs(endTime).diff(startTime, 'minute');
   return Object.values(DurationFormats).find(({max}) => mins < max).format(mins);
 }
@@ -25,6 +34,10 @@ export function sortByTime(pointA, pointB) {
   const pointBDuration = getPointDuration(pointB);
 
   return pointBDuration - pointADuration;
+}
+
+export function sortByDay(pointA, pointB) {
+  return dayjs(pointA.dateFrom) - dayjs(pointB.dateFrom);
 }
 
 export function getPointDuration(point) {

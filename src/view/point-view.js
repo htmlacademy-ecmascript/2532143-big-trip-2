@@ -1,5 +1,5 @@
-import { humanizeDate, tripDuration } from '../utils/point-utils.js';
-import { DateFormats } from '../consts.js';
+import { humanizeDate, calculateTripDuration } from '../utils/point-utils.js';
+import { DateFormats } from '../const.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
 function createOfferTemplate ({title, price}) {
@@ -32,7 +32,7 @@ function createPointTemplate(point, destinations, offers) {
             &mdash;
             <time class="event__end-time" datetime="${humanizeDate(dateTo)}">${humanizeDate(dateTo, DateFormats.HOURS)}</time>
           </p>
-          <p class="event__duration">${tripDuration(dateFrom, dateTo)}</p>
+          <p class="event__duration">${calculateTripDuration(dateFrom, dateTo)}</p>
         </div>
         <p class="event__price">
           &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
