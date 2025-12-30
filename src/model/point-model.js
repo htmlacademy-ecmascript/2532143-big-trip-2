@@ -47,20 +47,19 @@ export default class PointsModel extends Observable {
   }
 
   async updatePoint(updateType, update) {
-
     try {
       const response = await this.#pointsApiService.updatePoint(update);
       const updatedPoint = this.#adaptToClient(response);
       this.#points = this.#points.map((point) => point.id === update.id ? update : point);
       this._notify(updateType, updatedPoint);
-    } catch(err) {
+    } catch (err) {
       throw new Error('Can\'t update point');
     }
   }
 
   async addPoint(updateType, update) {
     try {
-      const response = await this.#pointsApiService.addTask(update);
+      const response = await this.#pointsApiService.addPoint(update);
       const newPoint = this.#adaptToClient(response);
       this.#points = [newPoint, ...this.#points];
       this._notify(updateType, newPoint);

@@ -60,20 +60,27 @@ function renderOffers(offersList, checkedOffers) {
 function createDestinationTemplate(destinations, point) {
   const currentDestination = destinations.find((destinationsItem) => point.destination === destinationsItem.id);
   const { description, pictures } = currentDestination;
-  if (description > 0 || pictures.length > 0) {
+  const picturesTemplate = pictures.length > 0
+    ? pictures.map((picture) =>
+      `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`
+    ).join('') : '';
 
-    return (
-      `<section class="event__section  event__section--destination">
+  if (!description) {
+
+    return '';
+  }
+
+  return (
+    `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
       <p class="event__destination-description">${description}</p>
     <div class="event__photos-container">
       <div class="event__photos-tape">
-        <img class="event__photo" src="${pictures[0].src}" alt="${pictures[0].description}">
+        ${picturesTemplate}
       </div>
     </div>
       </section>`
-    );
-  }
+  );
 }
 
 function renderButtons(isEditMode) {
@@ -203,7 +210,7 @@ export default class EditorView extends AbstractStatefulView {
 
   #setDatePickers = () => {
     const [pointDateFromElement, pointDateToElement] = this.element.querySelectorAll('.event__input--time');
-    const currentDate = dayjs().toISOString();
+    //const currentDate = dayjs().toISOString();
     const commonConfigs = {
       dateFormat: 'd/m/Y H:i',
       enableTime: true,
@@ -215,9 +222,9 @@ export default class EditorView extends AbstractStatefulView {
       pointDateFromElement,
       {
         ...commonConfigs,
-        defaultDate: currentDate,
+        defaultDate: this._state.dateFrom,
         onClose: this.#pointDateFromCloseHandler,
-        minDate: currentDate,
+        maxDate: this._state.dateTo,
       }
     );
 
@@ -225,9 +232,9 @@ export default class EditorView extends AbstractStatefulView {
       pointDateToElement,
       {
         ...commonConfigs,
-        defaultDate: currentDate,
+        defaultDate: this._state.dateTo,
         onClose: this.#pointDateToCloseHandler,
-        minDate: currentDate,
+        minDate: this._state.dateFrom,
       }
     );
   };
