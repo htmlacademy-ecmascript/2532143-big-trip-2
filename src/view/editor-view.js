@@ -4,7 +4,6 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { BLANK_POINT } from '../const.js';
-import dayjs from 'dayjs';
 
 function createTypeTemplate(type, currentType) {
   const isChecked = type.toLowerCase() === currentType ? 'checked' : '';
