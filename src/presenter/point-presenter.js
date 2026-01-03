@@ -48,7 +48,10 @@ export default class PointPresenter {
       onEditClick: this.#handlePointClick,
       onFormSubmit: this.#handleFormSubmit,
       onDeletePoint: this.#handleDeletePoint,
-      isEditMode: true
+      isEditMode: true,
+      isSaving: false,
+      isDeleting: false,
+      isDisabled: false
     });
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
@@ -61,7 +64,8 @@ export default class PointPresenter {
     }
 
     if (this.#mode === Mode.EDITING) {
-      replace(this.#editPointComponent, prevPointEditComponent);
+      replace(this.#pointComponent, prevPointEditComponent);
+      this.#mode = Mode.DEFAULT;
     }
 
     remove(prevPointComponent);
@@ -85,6 +89,41 @@ export default class PointPresenter {
       this.#replaceFormToPoint();
     }
   };
+
+  setSaving() {
+    if (this.#mode === Mode.EDITING) {
+      this.#editPointComponent.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
+  }
+
+  setDeleting() {
+    if (this.#mode === Mode.EDITING) {
+      this.#editPointComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
+  }
+
+  setAborting() {
+    if (this.#mode === Mode.DEFAULT) {
+      this.#pointComponent.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#editPointComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#editPointComponent.shake(resetFormState);
+  }
 
   #replacePointToForm() {
     replace(this.#editPointComponent, this.#pointComponent);
@@ -121,7 +160,7 @@ export default class PointPresenter {
       UpdateType.PATCH,
       point
     );
-    this.#replaceFormToPoint();
+
   };
 
   #handleDeletePoint = (point) => {

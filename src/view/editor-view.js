@@ -4,7 +4,6 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { BLANK_POINT } from '../const.js';
-import dayjs from 'dayjs';
 
 function createTypeTemplate(type, currentType) {
   const isChecked = type.toLowerCase() === currentType ? 'checked' : '';
@@ -18,13 +17,13 @@ function createTypeTemplate(type, currentType) {
   );
 }
 
-function createOfferTemplate(offerItem, checkedOffers) {
+function createOfferTemplate(offerItem, checkedOffers, isDisabled) {
   const {title, price, id} = offerItem;
   const isChecked = checkedOffers.map((item) => item.id).includes(id) ? 'checked' : '';
 
   return (
     `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="${id}" type="checkbox" name="event-offer-luggage" ${isChecked}>
+      <input class="event__offer-checkbox  visually-hidden" id="${id}" type="checkbox" name="event-offer-luggage" ${isChecked} ${isDisabled ? 'disabled' : ''}>
       <label class="event__offer-label" for="${id}">
         <span class="event__offer-title">${title}</span>
         &plus;&euro;&nbsp;
@@ -41,7 +40,7 @@ function createOptionTemplate(value) {
   );
 }
 
-function renderOffers(offersList, checkedOffers) {
+function renderOffers(offersList, checkedOffers, isDisabled) {
   if (offersList.length === 0) {
 
     return '';
@@ -51,7 +50,7 @@ function renderOffers(offersList, checkedOffers) {
     `<section class="event__section  event__section--offers">
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
         <div class="event__available-offers">
-        ${offersList.map((offerItem) => createOfferTemplate(offerItem, checkedOffers)).join('')}
+        ${offersList.map((offerItem) => createOfferTemplate(offerItem, checkedOffers, isDisabled)).join('')}
         </div>
       </section>`
   );
@@ -60,32 +59,40 @@ function renderOffers(offersList, checkedOffers) {
 function createDestinationTemplate(destinations, point) {
   const currentDestination = destinations.find((destinationsItem) => point.destination === destinationsItem.id);
   const { description, pictures } = currentDestination;
-  if (description > 0 || pictures.length > 0) {
+  const picturesTemplate = pictures.length > 0
+    ? pictures.map((picture) =>
+      `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`
+    ).join('') : '';
 
-    return (
-      `<section class="event__section  event__section--destination">
+  if (!description) {
+
+    return '';
+  }
+
+  return (
+    `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
       <p class="event__destination-description">${description}</p>
     <div class="event__photos-container">
       <div class="event__photos-tape">
-        <img class="event__photo" src="${pictures[0].src}" alt="${pictures[0].description}">
+        ${picturesTemplate}
       </div>
     </div>
       </section>`
-    );
-  }
+  );
 }
 
-function renderButtons(isEditMode) {
-
+function renderButtons(isEditMode, isSaving, isDisabled, isDeleting) {
+  const deleteButton = isDeleting ? 'Deleting...' : 'Delete';
   return (
-    `<button class="event__reset-btn" type="reset">${isEditMode ? 'Delete' : 'Cancel'}</button>
+    `<button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+    <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isEditMode ? deleteButton : 'Cancel'}</button>
      ${isEditMode ? '<button class="event__rollup-btn" type="button">' : ''}`
   );
 }
 
 function createEditorTemplate(point, destinations, offers, isEditMode) {
-  const {type, destination, dateFrom, dateTo, basePrice} = point;
+  const {type, destination, dateFrom, dateTo, basePrice, isDisabled, isSaving, isDeleting} = point;
   const name = destinations.find((destinationPoint) => destinationPoint.id === destination)?.name || '';
   const offersByType = offers.find((offer) => offer.type === point.type).offers;
   const choosenOffers = offersByType.filter((item) => point.offers.find((id) => item.id === id));
@@ -98,7 +105,7 @@ function createEditorTemplate(point, destinations, offers, isEditMode) {
             <span class="visually-hidden">Choose event type</span>
             <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
           </label>
-          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${isDisabled ? 'disabled' : ''}>
 
           <div class="event__type-list">
             <fieldset class="event__type-group">
@@ -113,7 +120,7 @@ function createEditorTemplate(point, destinations, offers, isEditMode) {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${name}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${name}" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
           <datalist id="destination-list-1">
             ${destinations.map((item) => createOptionTemplate(item)).join('')}
           </datalist>
@@ -121,10 +128,10 @@ function createEditorTemplate(point, destinations, offers, isEditMode) {
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${humanizeDate(dateFrom, 'DD/MM/YY HH:mm')}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${humanizeDate(dateFrom, 'DD/MM/YY HH:mm')}" ${isDisabled ? 'disabled' : ''}>
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${humanizeDate(dateTo, 'DD/MM/YY HH:mm')}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${humanizeDate(dateTo, 'DD/MM/YY HH:mm')}" ${isDisabled ? 'disabled' : ''}>
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -132,16 +139,15 @@ function createEditorTemplate(point, destinations, offers, isEditMode) {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}" ${isDisabled ? 'disabled' : ''}>
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        ${renderButtons(isEditMode)}
+        ${renderButtons(isEditMode, isSaving, isDisabled, isDeleting)}
           <span class="visually-hidden">Open event</span>
         </button>
       </header>
       <section class="event__details">
-          ${renderOffers(offersByType, choosenOffers)}
+          ${renderOffers(offersByType, choosenOffers, isDisabled)}
           ${destination ? createDestinationTemplate(destinations, point) : ''}
       </section>
     </form>`
@@ -157,8 +163,11 @@ export default class EditorView extends AbstractStatefulView {
   #datePickerDateTo = null;
   #handleDeletePoint = null;
   #isEditMode = null;
+  #isDeletingMode = null;
+  #isSavingMode = null;
+  #isDisabledMode = null;
 
-  constructor({point = BLANK_POINT, destinations, offers, onEditClick, onFormSubmit, onDeletePoint, isEditMode}) {
+  constructor({point = BLANK_POINT, destinations, offers, onEditClick, onFormSubmit, onDeletePoint, isEditMode, isDisabled, isSaving, isDeleting}) {
     super();
     this._setState(EditorView.parsePointToState(point));
     this.#destinations = destinations;
@@ -167,6 +176,9 @@ export default class EditorView extends AbstractStatefulView {
     this.#handleFormSubmit = onFormSubmit;
     this.#handleDeletePoint = onDeletePoint;
     this.#isEditMode = isEditMode;
+    this.#isDeletingMode = isDeleting;
+    this.#isSavingMode = isSaving;
+    this.#isDisabledMode = isDisabled;
 
 
     this._restoreHandlers();
@@ -174,7 +186,7 @@ export default class EditorView extends AbstractStatefulView {
 
   get template() {
 
-    return createEditorTemplate(this._state, this.#destinations, this.#offers, this.#isEditMode);
+    return createEditorTemplate(this._state, this.#destinations, this.#offers, this.#isEditMode, this.#isSavingMode, this.#isDeletingMode, this.#isDisabledMode);
   }
 
   removeElement = () => {
@@ -203,7 +215,7 @@ export default class EditorView extends AbstractStatefulView {
 
   #setDatePickers = () => {
     const [pointDateFromElement, pointDateToElement] = this.element.querySelectorAll('.event__input--time');
-    const currentDate = dayjs().toISOString();
+    //const currentDate = dayjs().toISOString();
     const commonConfigs = {
       dateFormat: 'd/m/Y H:i',
       enableTime: true,
@@ -215,9 +227,9 @@ export default class EditorView extends AbstractStatefulView {
       pointDateFromElement,
       {
         ...commonConfigs,
-        defaultDate: currentDate,
+        defaultDate: this._state.dateFrom,
         onClose: this.#pointDateFromCloseHandler,
-        minDate: currentDate,
+        maxDate: this._state.dateTo,
       }
     );
 
@@ -225,15 +237,15 @@ export default class EditorView extends AbstractStatefulView {
       pointDateToElement,
       {
         ...commonConfigs,
-        defaultDate: currentDate,
+        defaultDate: this._state.dateTo,
         onClose: this.#pointDateToCloseHandler,
-        minDate: currentDate,
+        minDate: this._state.dateFrom,
       }
     );
   };
 
   #deletePointHandler = () => {
-    this.#handleDeletePoint(this._state);
+    this.#handleDeletePoint(EditorView.parseStateToPoint(this._state));
   };
 
   #editClickHandler = () => {
@@ -242,7 +254,7 @@ export default class EditorView extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit(this._state);
+    this.#handleFormSubmit(EditorView.parseStateToPoint(this._state));
   };
 
   #pointTypeChangeHandler = (evt) => {
@@ -278,6 +290,20 @@ export default class EditorView extends AbstractStatefulView {
 
   static parsePointToState(point) {
 
-    return {...point};
+    return {...point,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+    };
+  }
+
+  static parseStateToPoint(state) {
+    const point = {...state};
+
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
+
+    return point;
   }
 }

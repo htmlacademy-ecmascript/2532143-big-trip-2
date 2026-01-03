@@ -26,7 +26,7 @@ export const ChecksTravelDate = {
 };
 
 export function sortByPrice(pointA, pointB) {
-  return pointA.basePrice - pointB.basePrice;
+  return pointB.basePrice - pointA.basePrice;
 }
 
 export function sortByTime(pointA, pointB) {

@@ -90,6 +90,7 @@ export const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };
 
 export const DEFAULT_FILTER_TYPE = FilterTypes.EVERYTHING;
