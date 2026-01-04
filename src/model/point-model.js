@@ -11,10 +11,6 @@ export default class PointsModel extends Observable {
   constructor({pointsApiService}) {
     super();
     this.#pointsApiService = pointsApiService;
-
-    this.#pointsApiService.points.then((points) => {
-      console.log(points.map(this.#adaptToClient));
-    });
   }
 
   get points() {
@@ -27,11 +23,13 @@ export default class PointsModel extends Observable {
       this.#offers = await this.#pointsApiService.offers;
       this.#destinations = await this.#pointsApiService.destinations;
       this.#points = points.map(this.#adaptToClient);
+      this._notify(UpdateType.INIT);
     } catch(err) {
       this.#points = [];
-    }
+      this._notify(UpdateType.INIT_ERROR);
 
-    this._notify(UpdateType.INIT);
+      throw err;
+    }
   }
 
   set points(points) {

@@ -45,6 +45,6 @@ function handleNewAddButtonClick() {
 
 filterPresenter.init();
 mainPresenter.init();
-pointsModel.init().finally(() => {
+pointsModel.init().then(() => {
   render(newPointButtonComponent, controlsContainer);
 });

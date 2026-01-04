@@ -99,6 +99,7 @@ export default class MainPresenter {
   #renderSort() {
     this.#currentSort = new SortView({
       sorts: this.#sorts,
+      currentSort: DEFAULT_SORT_TYPE,
       onSortTypeChange: this.#handleSortTypeChange
     });
 
@@ -162,6 +163,11 @@ export default class MainPresenter {
         remove(this.#loadingComponent);
         this.#renderBoard();
         break;
+      case UpdateType.INIT_ERROR:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderError();
+        break;
       default:
         throw new Error(`Unknown action type: ${actionType}`);
     }
@@ -218,6 +224,13 @@ export default class MainPresenter {
 
   #renderLoading() {
     render(this.#loadingComponent, this.#mainContainer, RenderPosition.AFTERBEGIN);
+  }
+
+  #renderError() {
+    this.#emptyListComponent = new EmptyListView({
+      message: 'Something went wrong! :-('
+    });
+    render(this.#emptyListComponent, this.#mainContainer);
   }
 
   #clearPointList({resetSortType = false} = {}) {
