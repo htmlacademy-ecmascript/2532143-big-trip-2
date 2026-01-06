@@ -99,7 +99,7 @@ export default class MainPresenter {
   #renderSort() {
     this.#currentSort = new SortView({
       sorts: this.#sorts,
-      currentSort: DEFAULT_SORT_TYPE,
+      currentSort: this.#currentSortType,
       onSortTypeChange: this.#handleSortTypeChange
     });
 
@@ -156,6 +156,8 @@ export default class MainPresenter {
         break;
       case UpdateType.MAJOR:
         this.#clearPointList({resetSortType: true});
+        remove(this.#currentSort);
+        this.#renderSort();
         this.#renderBoard();
         break;
       case UpdateType.INIT:
@@ -194,6 +196,7 @@ export default class MainPresenter {
       this.#renderEmptyList();
     } else {
       this.#renderPointList();
+      remove(this.#emptyListComponent);
     }
 
   };
@@ -234,11 +237,11 @@ export default class MainPresenter {
   }
 
   #clearPointList({resetSortType = false} = {}) {
-    this.#newPointPresenter.destroy();
-    this.#pointPresenters.forEach((presenter) => presenter.destroy());
-    this.#pointPresenters.clear();
     if (resetSortType) {
       this.#currentSortType = DEFAULT_SORT_TYPE;
     }
+    this.#newPointPresenter.destroy();
+    this.#pointPresenters.forEach((presenter) => presenter.destroy());
+    this.#pointPresenters.clear();
   }
 }
