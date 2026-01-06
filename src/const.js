@@ -91,6 +91,7 @@ export const UpdateType = {
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
   INIT: 'INIT',
+  INIT_ERROR: 'INIT_ERROR'
 };
 
 export const DEFAULT_FILTER_TYPE = FilterTypes.EVERYTHING;
