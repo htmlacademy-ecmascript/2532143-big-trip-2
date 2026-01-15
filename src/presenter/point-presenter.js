@@ -2,6 +2,7 @@ import EditorView from '../view/editor-view.js';
 import PointView from '../view/point-view.js';
 import { render, replace, remove } from '../framework/render.js';
 import { UpdateType, UserAction } from '../const.js';
+import { isDatesEqual, isPriceEqual } from '../utils/point-utils.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -79,6 +80,7 @@ export default class PointPresenter {
 
   resetView() {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#editPointComponent.reset(this.#point);
       this.#replaceFormToPoint();
     }
   }
@@ -86,6 +88,7 @@ export default class PointPresenter {
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
+      this.#editPointComponent.reset(this.#point);
       this.#replaceFormToPoint();
     }
   };
@@ -151,14 +154,17 @@ export default class PointPresenter {
   };
 
   #handlePointClick = () => {
+    this.#editPointComponent.reset(this.#point);
     this.#replaceFormToPoint();
   };
 
-  #handleFormSubmit = (point) => {
+  #handleFormSubmit = (update) => {
+    const isMinorUpdate = !isDatesEqual(this.#point.dateFrom, update.dateFrom) || !isPriceEqual(this.#point.basePrice, update.basePrice);
+
     this.#handleDataChange(
       UserAction.UPDATE_POINT,
-      UpdateType.PATCH,
-      point
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      update
     );
 
   };

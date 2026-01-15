@@ -85,10 +85,10 @@ export default class MainPresenter {
   }
 
   createPoint() {
+    remove(this.#emptyListComponent);
     this.#currentSortType = DEFAULT_SORT_TYPE;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterTypes.EVERYTHING);
     this.#newPointPresenter.init(BLANK_POINT, this.offers, this.destinations);
-
   }
 
   #handleSortTypeChange = (sortType) => {
