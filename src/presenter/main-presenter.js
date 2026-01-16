@@ -85,10 +85,10 @@ export default class MainPresenter {
   }
 
   createPoint() {
+    remove(this.#emptyListComponent);
     this.#currentSortType = DEFAULT_SORT_TYPE;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterTypes.EVERYTHING);
     this.#newPointPresenter.init(BLANK_POINT, this.offers, this.destinations);
-
   }
 
   #handleSortTypeChange = (sortType) => {
@@ -99,6 +99,7 @@ export default class MainPresenter {
   #renderSort() {
     this.#currentSort = new SortView({
       sorts: this.#sorts,
+      currentSort: this.#currentSortType,
       onSortTypeChange: this.#handleSortTypeChange
     });
 
@@ -155,12 +156,19 @@ export default class MainPresenter {
         break;
       case UpdateType.MAJOR:
         this.#clearPointList({resetSortType: true});
+        remove(this.#currentSort);
+        this.#renderSort();
         this.#renderBoard();
         break;
       case UpdateType.INIT:
         this.#isLoading = false;
         remove(this.#loadingComponent);
         this.#renderBoard();
+        break;
+      case UpdateType.INIT_ERROR:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderError();
         break;
       default:
         throw new Error(`Unknown action type: ${actionType}`);
@@ -188,6 +196,7 @@ export default class MainPresenter {
       this.#renderEmptyList();
     } else {
       this.#renderPointList();
+      remove(this.#emptyListComponent);
     }
 
   };
@@ -220,12 +229,19 @@ export default class MainPresenter {
     render(this.#loadingComponent, this.#mainContainer, RenderPosition.AFTERBEGIN);
   }
 
+  #renderError() {
+    this.#emptyListComponent = new EmptyListView({
+      message: 'Something went wrong! :-('
+    });
+    render(this.#emptyListComponent, this.#mainContainer);
+  }
+
   #clearPointList({resetSortType = false} = {}) {
-    this.#newPointPresenter.destroy();
-    this.#pointPresenters.forEach((presenter) => presenter.destroy());
-    this.#pointPresenters.clear();
     if (resetSortType) {
       this.#currentSortType = DEFAULT_SORT_TYPE;
     }
+    this.#newPointPresenter.destroy();
+    this.#pointPresenters.forEach((presenter) => presenter.destroy());
+    this.#pointPresenters.clear();
   }
 }

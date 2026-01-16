@@ -43,3 +43,11 @@ export function sortByDay(pointA, pointB) {
 export function getPointDuration(point) {
   return dayjs(point.dateTo).diff(dayjs(point.dateFrom));
 }
+
+export function isDatesEqual(dateA, dateB) {
+  return (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
+}
+
+export function isPriceEqual(priceA, priceB) {
+  return (priceA === null && priceB === null) || priceA === priceB;
+}

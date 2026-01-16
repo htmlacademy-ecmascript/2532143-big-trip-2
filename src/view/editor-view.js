@@ -56,13 +56,23 @@ function renderOffers(offersList, checkedOffers, isDisabled) {
   );
 }
 
+function createPhotosTemplate(pictures) {
+  if (pictures.length === 0) {
+    return '';
+  }
+
+  return (`
+    <div class="event__photos-container">
+      <div class="event__photos-tape">
+        ${pictures.map((picture) => `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`)}
+      </div>
+    </div>
+    `);
+}
+
 function createDestinationTemplate(destinations, point) {
   const currentDestination = destinations.find((destinationsItem) => point.destination === destinationsItem.id);
   const { description, pictures } = currentDestination;
-  const picturesTemplate = pictures.length > 0
-    ? pictures.map((picture) =>
-      `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`
-    ).join('') : '';
 
   if (!description) {
 
@@ -73,11 +83,7 @@ function createDestinationTemplate(destinations, point) {
     `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
       <p class="event__destination-description">${description}</p>
-    <div class="event__photos-container">
-      <div class="event__photos-tape">
-        ${picturesTemplate}
-      </div>
-    </div>
+        ${createPhotosTemplate(pictures)}
       </section>`
   );
 }
@@ -98,7 +104,8 @@ function createEditorTemplate(point, destinations, offers, isEditMode) {
   const choosenOffers = offersByType.filter((item) => point.offers.find((id) => item.id === id));
 
   return (
-    `<form class="event event--edit" action="#" method="post">
+    `<li class="trip-events__item">
+    <form class="event event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -150,7 +157,8 @@ function createEditorTemplate(point, destinations, offers, isEditMode) {
           ${renderOffers(offersByType, choosenOffers, isDisabled)}
           ${destination ? createDestinationTemplate(destinations, point) : ''}
       </section>
-    </form>`
+    </form>
+    </li>`
   );
 }
 
@@ -189,6 +197,12 @@ export default class EditorView extends AbstractStatefulView {
     return createEditorTemplate(this._state, this.#destinations, this.#offers, this.#isEditMode, this.#isSavingMode, this.#isDeletingMode, this.#isDisabledMode);
   }
 
+  reset(point) {
+    this.updateElement(
+      EditorView.parsePointToState(point)
+    );
+  }
+
   removeElement = () => {
     super.removeElement();
 
@@ -217,7 +231,7 @@ export default class EditorView extends AbstractStatefulView {
     const [pointDateFromElement, pointDateToElement] = this.element.querySelectorAll('.event__input--time');
     //const currentDate = dayjs().toISOString();
     const commonConfigs = {
-      dateFormat: 'd/m/Y H:i',
+      dateFormat: 'd/m/y H:i',
       enableTime: true,
       locale: {firstDayOfWeek: 1},
       'time_24hr': true
