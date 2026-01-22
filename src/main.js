@@ -1,10 +1,10 @@
 import { render } from './framework/render.js';
 import FilterModel from './model/filter-model.js';
-import PointsModel from './model/point-model.js';
+import PointsModel from './model/points-model.js';
 import PointsApiService from './points-api-service.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import MainPresenter from './presenter/main-presenter.js';
-import NewAddPointButton from './view/add-new-point-button-view.js';
+import NewAddPointButton from './view/new-add-point-button-view.js';
 
 const AUTHORIZATION = 'Basic eo0w590ik29800a';
 const END_POINT = 'https://22.objects.htmlacademy.pro/big-trip';
@@ -30,21 +30,21 @@ const mainPresenter = new MainPresenter({
   onNewPointDestroy: handleNewPointFormClose
 });
 
-const newPointButtonComponent = new NewAddPointButton({
-  onAddButtonClick: handleNewAddButtonClick,
+export const newAddPointButtonComponent = new NewAddPointButton({
+  onAddButtonClick: handleNewAddPointButtonClick,
 });
 
 function handleNewPointFormClose() {
-  newPointButtonComponent.element.disabled = false;
+  newAddPointButtonComponent.element.disabled = false;
 }
 
-function handleNewAddButtonClick() {
+function handleNewAddPointButtonClick() {
   mainPresenter.createPoint();
-  newPointButtonComponent.element.disabled = true;
+  newAddPointButtonComponent.element.disabled = true;
 }
 
 filterPresenter.init();
 mainPresenter.init();
-pointsModel.init().then(() => {
-  render(newPointButtonComponent, controlsContainer);
+pointsModel.init().finally(() => {
+  render(newAddPointButtonComponent, controlsContainer);
 });

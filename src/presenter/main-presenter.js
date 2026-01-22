@@ -10,6 +10,7 @@ import { filter } from '../utils/filter-util.js';
 import NewPointPresenter from './new-point-presenter.js';
 import LoadingView from '../view/loading-view.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
+import { newAddPointButtonComponent } from '../main.js';
 
 const TimeLimit = {
   LOWER_LIMIT: 350,
@@ -167,7 +168,9 @@ export default class MainPresenter {
         break;
       case UpdateType.INIT_ERROR:
         this.#isLoading = false;
+        newAddPointButtonComponent.element.disabled = true;
         remove(this.#loadingComponent);
+        remove(this.#currentSort);
         this.#renderError();
         break;
       default:
@@ -231,7 +234,7 @@ export default class MainPresenter {
 
   #renderError() {
     this.#emptyListComponent = new EmptyListView({
-      message: 'Something went wrong! :-('
+      message: 'Failed to load latest route information'
     });
     render(this.#emptyListComponent, this.#mainContainer);
   }

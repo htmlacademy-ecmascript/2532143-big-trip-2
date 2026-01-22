@@ -229,7 +229,6 @@ export default class EditorView extends AbstractStatefulView {
 
   #setDatePickers = () => {
     const [pointDateFromElement, pointDateToElement] = this.element.querySelectorAll('.event__input--time');
-    //const currentDate = dayjs().toISOString();
     const commonConfigs = {
       dateFormat: 'd/m/y H:i',
       enableTime: true,
