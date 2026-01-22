@@ -3,6 +3,7 @@ import FilterModel from './model/filter-model.js';
 import PointsModel from './model/points-model.js';
 import PointsApiService from './points-api-service.js';
 import FilterPresenter from './presenter/filter-presenter.js';
+import InfoPresenter from './presenter/info-presenter.js';
 import MainPresenter from './presenter/main-presenter.js';
 import NewAddPointButton from './view/new-add-point-button-view.js';
 
@@ -43,8 +44,15 @@ function handleNewAddPointButtonClick() {
   newAddPointButtonComponent.element.disabled = true;
 }
 
+const infoPresenter = new InfoPresenter({
+  container: controlsContainer,
+  pointsModel: pointsModel
+});
+
+
 filterPresenter.init();
 mainPresenter.init();
 pointsModel.init().finally(() => {
+  infoPresenter.init();
   render(newAddPointButtonComponent, controlsContainer);
 });

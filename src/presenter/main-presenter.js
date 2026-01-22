@@ -192,7 +192,6 @@ export default class MainPresenter {
       return;
     }
 
-    render(this.#infoViewComponent, this.#controlsContainer, RenderPosition.AFTERBEGIN);
     render(this.#pointListComponent, this.#mainContainer);
 
     if (this.points.length === 0) {
