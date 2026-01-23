@@ -10,7 +10,7 @@ import { filter } from '../utils/filter-util.js';
 import NewPointPresenter from './new-point-presenter.js';
 import LoadingView from '../view/loading-view.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
-import { newAddPointButtonComponent } from '../main.js';
+import NewAddPointButton from '../view/new-add-point-button-view.js';
 
 const TimeLimit = {
   LOWER_LIMIT: 350,
@@ -18,10 +18,9 @@ const TimeLimit = {
 };
 
 export default class MainPresenter {
-  #mainContainer;
-  #pointsModel;
-  #headerContainer;
-  #controlsContainer;
+  #mainContainer = null;
+  #pointsModel = null;
+  #controlsContainer = null;
   #pointListComponent = new PointListView();
   #currentSort = null;
   #infoViewComponent = new InfoView ();
@@ -32,6 +31,7 @@ export default class MainPresenter {
   #filterModel = null;
   #emptyListComponent = null;
   #newPointPresenter = null;
+  #newAddPointButtonComponent = null;
   #loadingComponent = new LoadingView();
   #isLoading = true;
   #uiBlocker = new UiBlocker ({
@@ -39,17 +39,20 @@ export default class MainPresenter {
     upperLimit: TimeLimit.UPPER_LIMIT
   });
 
-  constructor({container, pointsModel, headerContainer, controlsContainer, filterModel, onNewPointDestroy}) {
+  constructor({container, pointsModel, controlsContainer, filterModel}) {
     this.#mainContainer = container;
     this.#pointsModel = pointsModel;
-    this.#headerContainer = headerContainer;
     this.#controlsContainer = controlsContainer;
     this.#filterModel = filterModel;
 
     this.#newPointPresenter = new NewPointPresenter({
       pointListContainer: this.#pointListComponent.element,
       onDataChange: this.#handleViewAction,
-      onDestroy: onNewPointDestroy
+      onDestroy: this.#handleNewPointFormClose
+    });
+
+    this.#newAddPointButtonComponent = new NewAddPointButton({
+      onAddButtonClick: this.#handleNewAddPointButtonClick,
     });
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
@@ -83,14 +86,24 @@ export default class MainPresenter {
   init() {
     this.#renderBoard();
     this.#renderSort();
+    render(this.#newAddPointButtonComponent, this.#controlsContainer);
   }
 
-  createPoint() {
+  #createPoint = () => {
     remove(this.#emptyListComponent);
     this.#currentSortType = DEFAULT_SORT_TYPE;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterTypes.EVERYTHING);
     this.#newPointPresenter.init(BLANK_POINT, this.offers, this.destinations);
-  }
+    this.#newAddPointButtonComponent.changeButtonState(true);
+  };
+
+  #handleNewPointFormClose = () => {
+    this.#newAddPointButtonComponent.changeButtonState(false);
+  };
+
+  #handleNewAddPointButtonClick = () => {
+    this.#createPoint();
+  };
 
   #handleSortTypeChange = (sortType) => {
     this.#currentSortType = sortType;
@@ -168,7 +181,7 @@ export default class MainPresenter {
         break;
       case UpdateType.INIT_ERROR:
         this.#isLoading = false;
-        newAddPointButtonComponent.element.disabled = true;
+        this.#newAddPointButtonComponent.changeButtonState(true);
         remove(this.#loadingComponent);
         remove(this.#currentSort);
         this.#renderError();

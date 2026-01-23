@@ -19,6 +19,10 @@ export default class NewAddPointButton extends AbstractView {
     return createNewAddPointButtonTemplate();
   }
 
+  changeButtonState = (state) => {
+    this.element.disabled = state;
+  };
+
   #clickHandler = (evt) => {
     evt.preventDefault();
     this.#handleAddButtonClick();
