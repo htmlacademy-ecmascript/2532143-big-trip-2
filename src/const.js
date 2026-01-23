@@ -106,3 +106,5 @@ export const BLANK_POINT = {
   offers: [],
   type: 'flight'
 };
+
+export const MIN_DESTINATIONS_COUNT = 3;
