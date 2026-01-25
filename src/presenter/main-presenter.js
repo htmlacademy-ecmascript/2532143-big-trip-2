@@ -227,7 +227,6 @@ export default class MainPresenter {
     });
     render(this.#emptyListComponent, this.#mainContainer);
     remove(this.#currentSort);
-    remove(this.#infoViewComponent);
   };
 
   #renderPointList = () => {

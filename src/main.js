@@ -5,7 +5,7 @@ import FilterPresenter from './presenter/filter-presenter.js';
 import InfoPresenter from './presenter/info-presenter.js';
 import MainPresenter from './presenter/main-presenter.js';
 
-const AUTHORIZATION = 'Basic eo0w590ik29700a';
+const AUTHORIZATION = 'Basic eo0w590ik29800a';
 const END_POINT = 'https://22.objects.htmlacademy.pro/big-trip';
 
 const mainContainer = document.querySelector('.trip-events');
