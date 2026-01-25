@@ -16,21 +16,24 @@ export const DateFormats = {
   MINS: 'MM',
   HOURS: 'HH:mm',
   DAYS: 'DD:HH:mm',
-  MONTH: 'MMM D'
+  MONTH: 'MMM D',
+  DATE_FORMAT: 'YYYY-MM-DD',
+  POINT_TIME_FORMAT: 'YYYY-MM-DDTHH:mm'
 };
 
 export const FilterTypes = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
   PRESENT: 'present',
-  PAST: 'past'
+  PAST: 'past',
 };
 
 export const EmptyListMessages = {
   EVERYTHING: 'Click New Event to create your first point',
   FUTURE: 'There are no future events now',
   PRESENT: 'There are no present events now',
-  PAST: 'There are no past events now'
+  PAST: 'There are no past events now',
+  ERROR: 'Failed to load latest route information'
 };
 
 export const DurationFormats = {
