@@ -1,6 +1,5 @@
 import PointListView from '/src/view/point-list-view.js';
 import SortView from '/src/view/sort-view.js';
-import InfoView from '/src/view/info-view.js';
 import EmptyListView from '../view/empty-list-view.js';
 import { remove, render, RenderPosition } from '../framework/render.js';
 import PointPresenter from './point-presenter.js';
@@ -23,7 +22,6 @@ export default class MainPresenter {
   #controlsContainer = null;
   #pointListComponent = new PointListView();
   #currentSort = null;
-  #infoViewComponent = new InfoView ();
   #pointPresenters = new Map();
   #sorts = SortTypes;
   #currentSortType = DEFAULT_SORT_TYPE;
