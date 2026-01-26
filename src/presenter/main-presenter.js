@@ -101,6 +101,9 @@ export default class MainPresenter {
   #handleNewPointFormClose = () => {
     this.#isCreatingNewPoint = false;
     this.#newAddPointButtonComponent.changeButtonState(false);
+    if (this.points.length === 0) {
+      this.#renderEmptyList();
+    }
   };
 
   #handleNewAddPointButtonClick = () => {
@@ -149,16 +152,15 @@ export default class MainPresenter {
         }
         break;
       case UserAction.DELETE_POINT:
-        const deletedPoint = this.#pointPresenters.get(update.id);
-        if (!deletedPoint) {
+        if (!this.#pointPresenters.get(update.id)) {
           this.#uiBlocker.unblock();
           return;
         }
-        deletedPoint.setDeleting();
+        this.#pointPresenters.get(update.id).setDeleting();
         try {
           await this.#pointsModel.deletePoint(updateType, update);
         } catch(err) {
-          deletedPoint.setAborting();
+          this.#pointPresenters.get(update.id).setAborting();
         }
         break;
     }
