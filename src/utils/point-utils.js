@@ -6,11 +6,6 @@ export function humanizeDate(date, format) {
 }
 
 export function formatDurationValue(value, symbol) {
-  if (value <= 0) {
-
-    return '';
-  }
-
   return `${String(value).padStart(2, '0')}${symbol}`;
 }
 

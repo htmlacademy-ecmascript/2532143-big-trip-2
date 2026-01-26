@@ -18,7 +18,6 @@ export default class InfoPresenter {
 
   init() {
     const points = this.#pointsModel.points;
-
     if (points.length === 0) {
       if (this.#infoViewComponent) {
         remove(this.#infoViewComponent);
@@ -27,11 +26,15 @@ export default class InfoPresenter {
       return;
     }
 
+    this.#getInfoViewComponent(points);
+  }
+
+  #getInfoViewComponent = (points) => {
     const sortedPoints = [...points].sort((a, b) => new Date(a.dateFrom) - new Date(b.dateFrom));
 
     const route = this.#getDestinationNames(sortedPoints);
     const dates = this.#getPointDates(sortedPoints);
-    const totalCost = this.#getTotalCost(sortedPoints);
+    const totalCost = this.#getTotalCost(points);
 
     const tripInfoData = { route, dates, totalCost };
     const prevTripInfoComponent = this.#infoViewComponent;
@@ -44,23 +47,44 @@ export default class InfoPresenter {
       replace(this.#infoViewComponent, prevTripInfoComponent);
       remove(prevTripInfoComponent);
     }
-  }
+  };
 
-  #getTotalCost = (sortedPoints) => {
-    const totalCost = sortedPoints.reduce((sum, point) => sum + point.basePrice, 0);
-    return totalCost;
+  #getTotalCost = (points) => {
+    const allOffersByType = this.#pointsModel.offers;
+
+    return points.reduce((totalSum, point) => {
+      const pointTotal = point.basePrice ?? 0;
+
+      const offersForType = allOffersByType
+        .find((offerGroup) => offerGroup.type === point.type)
+        ?.offers || [];
+
+      const selectedOffers = offersForType.filter((offer) =>
+        point.offers.includes(offer.id)
+      );
+
+      const offersSum = selectedOffers.reduce(
+        (sum, offer) => sum + offer.price,
+        0
+      );
+
+      return totalSum + pointTotal + offersSum;
+    }, 0);
   };
 
   #getPointDates = (sortedPoints) => {
     const tripStart = sortedPoints[0].dateFrom;
     const tripEnd = sortedPoints[sortedPoints.length - 1].dateTo;
 
-    const formattedStart = humanizeDate(tripStart, 'MMM D');
-    const formattedEnd = humanizeDate(tripEnd, 'MMM D');
+    const formattedStart = humanizeDate(tripStart, 'D MMM');
+    const formattedEnd = humanizeDate(tripEnd, 'D MMM');
     return `${formattedStart} - ${formattedEnd}`;
   };
 
   #getDestinationNames = (sortedPoints) => {
+    if (!sortedPoints) {
+      return '';
+    }
     const destinationNames = sortedPoints.map((point) => {
       const destination = this.#pointsModel.destinations.find((dest) => dest.id === point.destination);
       return destination ? destination.name : '';

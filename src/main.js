@@ -40,6 +40,6 @@ const infoPresenter = new InfoPresenter({
 
 filterPresenter.init();
 mainPresenter.init();
-pointsModel.init().then(() => {
+pointsModel.init().finally(() => {
   infoPresenter.init();
 });

@@ -1,6 +1,9 @@
 import AbstractView from '../framework/view/abstract-view.js';
 
 function tripInfoTemplate(infoData) {
+  if (!infoData) {
+    return '';
+  }
   const {route, dates, totalCost} = infoData;
   return (
     `<section class="trip-main__trip-info  trip-info">

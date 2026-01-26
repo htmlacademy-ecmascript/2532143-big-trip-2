@@ -4,13 +4,13 @@ import InfoView from '/src/view/info-view.js';
 import EmptyListView from '../view/empty-list-view.js';
 import { remove, render, RenderPosition } from '../framework/render.js';
 import PointPresenter from './point-presenter.js';
-import { BLANK_POINT, DEFAULT_FILTER_TYPE, DEFAULT_SORT_TYPE, FilterTypes, SortTypes, UpdateType, UserAction } from '../const.js';
+import { BLANK_POINT, DEFAULT_FILTER_TYPE, DEFAULT_SORT_TYPE, EmptyListMessages, FilterTypes, SortTypes, UpdateType, UserAction } from '../const.js';
 import { sortByTime, sortByPrice, sortByDay } from '../utils/point-utils.js';
 import { filter } from '../utils/filter-util.js';
 import NewPointPresenter from './new-point-presenter.js';
 import LoadingView from '../view/loading-view.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
-import NewAddPointButton from '../view/new-add-point-button-view.js';
+import NewAddPointButtonView from '../view/new-add-point-button-view.js';
 
 const TimeLimit = {
   LOWER_LIMIT: 350,
@@ -32,6 +32,7 @@ export default class MainPresenter {
   #emptyListComponent = null;
   #newPointPresenter = null;
   #newAddPointButtonComponent = null;
+  #isCreatingNewPoint = false;
   #loadingComponent = new LoadingView();
   #isLoading = true;
   #uiBlocker = new UiBlocker ({
@@ -51,7 +52,7 @@ export default class MainPresenter {
       onDestroy: this.#handleNewPointFormClose
     });
 
-    this.#newAddPointButtonComponent = new NewAddPointButton({
+    this.#newAddPointButtonComponent = new NewAddPointButtonView({
       onAddButtonClick: this.#handleNewAddPointButtonClick,
     });
 
@@ -84,13 +85,13 @@ export default class MainPresenter {
   }
 
   init() {
+    render(this.#newAddPointButtonComponent, this.#controlsContainer);
     this.#renderBoard();
     this.#renderSort();
-    render(this.#newAddPointButtonComponent, this.#controlsContainer);
   }
 
   #createPoint = () => {
-    remove(this.#emptyListComponent);
+    this.#isCreatingNewPoint = true;
     this.#currentSortType = DEFAULT_SORT_TYPE;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterTypes.EVERYTHING);
     this.#newPointPresenter.init(BLANK_POINT, this.offers, this.destinations);
@@ -98,7 +99,11 @@ export default class MainPresenter {
   };
 
   #handleNewPointFormClose = () => {
+    this.#isCreatingNewPoint = false;
     this.#newAddPointButtonComponent.changeButtonState(false);
+    if (this.points.length === 0) {
+      this.#renderEmptyList();
+    }
   };
 
   #handleNewAddPointButtonClick = () => {
@@ -147,6 +152,10 @@ export default class MainPresenter {
         }
         break;
       case UserAction.DELETE_POINT:
+        if (!this.#pointPresenters.get(update.id)) {
+          this.#uiBlocker.unblock();
+          return;
+        }
         this.#pointPresenters.get(update.id).setDeleting();
         try {
           await this.#pointsModel.deletePoint(updateType, update);
@@ -159,7 +168,7 @@ export default class MainPresenter {
     this.#uiBlocker.unblock();
   };
 
-  #handleModelEvent = (updateType, data, actionType) => {
+  #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
         this.#pointPresenters.get(data.id).init(data, this.offers, this.destinations);
@@ -186,8 +195,6 @@ export default class MainPresenter {
         remove(this.#currentSort);
         this.#renderError();
         break;
-      default:
-        throw new Error(`Unknown action type: ${actionType}`);
     }
   };
 
@@ -199,19 +206,19 @@ export default class MainPresenter {
   };
 
   #renderBoard = () => {
+    render(this.#pointListComponent, this.#mainContainer);
+
     if (this.#isLoading) {
       this.#renderLoading();
 
       return;
     }
 
-    render(this.#pointListComponent, this.#mainContainer);
-
-    if (this.points.length === 0) {
+    if (this.points.length === 0 && !this.#isCreatingNewPoint) {
       this.#renderEmptyList();
     } else {
-      this.#renderPointList();
       remove(this.#emptyListComponent);
+      this.#renderPointList();
     }
 
   };
@@ -222,7 +229,6 @@ export default class MainPresenter {
     });
     render(this.#emptyListComponent, this.#mainContainer);
     remove(this.#currentSort);
-    remove(this.#infoViewComponent);
   };
 
   #renderPointList = () => {
@@ -246,7 +252,7 @@ export default class MainPresenter {
 
   #renderError() {
     this.#emptyListComponent = new EmptyListView({
-      message: 'Failed to load latest route information'
+      message: EmptyListMessages.ERROR
     });
     render(this.#emptyListComponent, this.#mainContainer);
   }
